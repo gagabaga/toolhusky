@@ -18449,22 +18449,22 @@ localStorage.setItem('mapIDS','');
                     let {inventory: n} = t.payload;
                     e.activeRow = n.activeRow,
                     function(e) {
-                        let t;
+                        var t, n, r;
+                        let a;
                         if (-1 === e.selectedEquipment)
                             return;
-                        let n = o.l.getInstance();
+                        let s = o.l.getInstance();
                         if (e.storageMid) {
-                            if (e.storageMid === n.mapStorageId)
-                                t = n.getMapStorage();
+                            if (e.storageMid === s.mapStorageId)
+                                a = s.getMapStorage();
                             else {
-                                let o = n.getEntityByUniqueId(e.storageMid);
-                                if (null == o ? void 0 : o.storage)
-                                    t = o.storage;
+                                let r = s.getEntityByUniqueId(e.storageMid);
+                                if (null == r ? void 0 : r.storage)
+                                    a = r.storage;
                                 else {
-                                    var r, a;
-                                    let o = n.currentPlayer;
-                                    if ((null == o ? void 0 : null === (a = o.full) || void 0 === a ? void 0 : null === (r = a.pet) || void 0 === r ? void 0 : r.mid) === e.storageMid)
-                                        t = o.full.pet.inventory;
+                                    let r = s.currentPlayer;
+                                    if ((null == r ? void 0 : null === (n = r.full) || void 0 === n ? void 0 : null === (t = n.pet) || void 0 === t ? void 0 : t.mid) === e.storageMid)
+                                        a = r.full.pet.inventory;
                                     else {
                                         e.selectedEquipment = -1,
                                         e.storageMid = void 0,
@@ -18477,11 +18477,11 @@ localStorage.setItem('mapIDS','');
                                 }
                             }
                         } else
-                            t = n.currentPlayer.full.inventory;
-                        if (null == t ? void 0 : t.slots) {
-                            let n = Object.values((t = JSON.parse(JSON.stringify(t))).slots).find(t => t.slot === e.selectedEquipment);
-                            (null == n ? void 0 : n.quantity) ? (e.selectedQty = n.quantity,
-                            e.selectedSlot = n) : (e.selectedEquipment = -1,
+                            a = s.currentPlayer.full.inventory;
+                        if (null == a ? void 0 : a.slots) {
+                            let t = Object.values((a = JSON.parse(JSON.stringify(a))).slots).find(t => t.slot === e.selectedEquipment);
+                            (null == t ? void 0 : t.quantity) && (null == t ? void 0 : t.item) === (null === (r = e.selectedItem) || void 0 === r ? void 0 : r.id) ? (e.selectedQty = t.quantity,
+                            e.selectedSlot = t) : (e.selectedEquipment = -1,
                             e.storageMid = void 0,
                             e.selectedItem = void 0,
                             e.selectedSlot = void 0,
@@ -20510,9 +20510,9 @@ localStorage.setItem('mapIDS','');
             let u = Date.now();
             if (u - C < 150)
                 return;
-            C = u;
             e.selfPlayer.x = e.object.x
             e.selfPlayer.y = e.object.y
+            C = u;
             let c = ec.getState()
               , h = (0,
             d.pT)(c)
