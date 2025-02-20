@@ -20902,6 +20902,7 @@ localStorage.setItem('mapIDS','');
             let h = Date.now();
             if (h - C < 150)
                 return;
+            c = u;
             e.selfPlayer.x = e.object.x
             e.selfPlayer.y = e.object.y
             let p = ec.getState()
