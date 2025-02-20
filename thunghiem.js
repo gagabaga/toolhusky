@@ -2222,7 +2222,7 @@ localStorage.setItem('mapIDS','');
     },
     25904: function(e, t, n) {
         "use strict";
-        t.IJ = t.PM = t.aG = t.ei = t.be = void 0;
+        t.IJ = t.f5 = t.PM = t.aG = t.ei = t.be = void 0;
         let r = n(41396);
         t.be = function(e, t) {
             if (e) {
@@ -2256,6 +2256,22 @@ localStorage.setItem('mapIDS','');
             } else if ("object" == typeof e)
                 return Object.entries(e).some( ([e,n]) => t(n, e));
             return !1
+        }
+        ,
+        t.f5 = function(e, t) {
+            if (e) {
+                if (e instanceof Map || e instanceof r.MapSchema) {
+                    for (let[n,r] of e.entries())
+                        if (t(r, n))
+                            return r;
+                    return
+                }
+                if ("object" == typeof e) {
+                    let n = Object.entries(e).find( ([e,n]) => t(n, e));
+                    if (n)
+                        return n?.[1]
+                }
+            }
         }
         ,
         t.IJ = function(e, t, n) {
@@ -2353,7 +2369,7 @@ localStorage.setItem('mapIDS','');
         r.assemblyTable = "assemblyTable",
         r.deepFryer = "deepFryer",
         t.DeprecatedCraftableTypeValues = Object.keys(n),
-        t.Skills = ["farming", "forestry", "cooking", "mining", "woodwork", "metalworking", "stoneshaping", "petcare", "business", "exploration", "granger", "ceramicist", "beekeeping", "textiler", "aviculture", "redifferentiator", "slugger", "winemaking", "fishing", "overall"]
+        t.Skills = ["farming", "forestry", "cooking", "mining", "woodwork", "metalworking", "stoneshaping", "petcare", "business", "exploration", "granger", "ceramicist", "beekeeping", "textiler", "aviculture", "redifferentiator", "slugger", "winemaking", "fishing", "overall", "total"]
     },
     26904: function(e, t) {
         "use strict";
@@ -2413,11 +2429,32 @@ localStorage.setItem('mapIDS','');
         Object.defineProperty(t, "__esModule", {
             value: !0
         }),
-        t.ExpressionOperators = t.FunctionNames = t.ActionTypes = t.EventTypes = void 0,
+        t.ExpressionOperators = t.TrackerFlags = t.FunctionNames = t.ActionTypes = t.EventTypes = void 0,
         t.EventTypes = ["click", "input", "timer", "place", "remove", "createRoom", "join", "leave", "checkRemove", "placeState", "hatch"],
         t.ActionTypes = ["stateChange", "displayChange", "itemChange", "displayTimer", "setTimer", "adjustInventory", "addAchievement", "eventTrigger", "entityTrigger", "itemTrigger", "iteratePlayers", "spawn", "return", "spawnmap", "clientCommand", "adjustSkill", "adjustCoins", "adjustEnergy", "adjustPet", "craft", "collect", "craftCancel", "destroy", "mapDrop", "mailDrop", "scheduleNotice", "setTracker", "incTracker", "decTracker", "insertArray", "loadData", "loadParams", "move", "custom", "call", "broadcast", "globalMessage", "track", "metric", "boost", "gacha", "transient"],
-        t.FunctionNames = ["time", "rand", "normal", "floor", "ceil", "max", "min", "abs", "log", "pow", "round", "evaltracker", "string", "array", "inventory", "space", "environment", "trait", "achievement", "crafttime", "permission", "membership", "tag", "state", "energy", "coins", "quest", "roomfind", "eval", "pet"],
+        t.FunctionNames = ["time", "dateformat", "limit", "rand", "normal", "floor", "ceil", "max", "min", "abs", "log", "pow", "sin", "asin", "cos", "acos", "tan", "atan", "round", "evaltracker", "string", "array", "inventory", "space", "environment", "trait", "achievement", "crafttime", "permission", "membership", "tag", "state", "energy", "coins", "quest", "roomfind", "eval", "pet"],
+        t.TrackerFlags = {
+            Temporary: 1,
+            Private: 2,
+            Numeric: 4
+        },
         t.ExpressionOperators = ["or", "<", ">", "=", "<>", ">=", "<=", "and", "+", "*", "-", "/", "not", "mod"]
+    },
+    71318: function(e, t) {
+        "use strict";
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        }),
+        t.GuildRoleLevels = t.GuildRoles = void 0,
+        t.GuildRoles = ["Owner", "Admin", "Worker", "Member", "Supporter", "Watcher"],
+        t.GuildRoleLevels = {
+            Owner: 6,
+            Admin: 5,
+            Worker: 4,
+            Member: 3,
+            Supporter: 2,
+            Watcher: 1
+        }
     },
     5341: function(e, t) {
         "use strict";
@@ -2538,9 +2575,15 @@ localStorage.setItem('mapIDS','');
     },
     48091: function(e, t) {
         "use strict";
+        var n, r;
         Object.defineProperty(t, "__esModule", {
             value: !0
-        })
+        }),
+        t.TileAttr = void 0,
+        (r = n || (t.TileAttr = n = {}))[r.none = 0] = "none",
+        r[r.wall = 1] = "wall",
+        r[r.impassable = 2] = "impassable",
+        r[r.allowBuilding = 4] = "allowBuilding"
     },
     59112: function(e, t) {
         "use strict";
@@ -2627,6 +2670,7 @@ localStorage.setItem('mapIDS','');
         i(n(42825), t),
         i(n(97656), t),
         i(n(33088), t),
+        i(n(71318), t),
         i(n(29921), t)
     },
     29921: function(e, t) {
@@ -2634,6 +2678,36 @@ localStorage.setItem('mapIDS','');
         Object.defineProperty(t, "__esModule", {
             value: !0
         })
+    },
+    77182: function(e, t, n) {
+        "use strict";
+        t.YN = t.qr = void 0;
+        let r = n(4152);
+        t.qr = function({n: e, s: t, e: n, w: r, ne: i, nw: o, se: a, sw: s}) {
+            return ((+!!e << 0) + (+!!t << 1) + (+!!n << 2) + (+!!r << 3) + ((+!!i << 4) + (+!!o << 5) + (+!!a << 6) + (+!!s << 7))).toString(2).padStart(8, "0")
+        }
+        ,
+        t.YN = function(e) {
+            let t = {};
+            return e?.forEach(e => {
+                let n = e.flags ?? 0
+                  , i = {
+                    index: 0,
+                    impassable: !!(n & r.TileAttr.impassable),
+                    allowBuilding: !!(n & r.TileAttr.allowBuilding),
+                    wall: !!(n & r.TileAttr.wall)
+                };
+                e.indexes.forEach(e => {
+                    t[e.toString()] = {
+                        ...i,
+                        index: e
+                    }
+                }
+                )
+            }
+            ),
+            t
+        }
     },
     66741: function(e, t, n) {
         "use strict";
@@ -7089,11 +7163,11 @@ localStorage.setItem('mapIDS','');
               , e1 = parseFloat
               , e2 = parseInt
               , e3 = "object" == typeof n.g && n.g && n.g.Object === Object && n.g
-              , e4 = "object" == typeof self && self && self.Object === Object && self
-              , e6 = e3 || e4 || Function("return this")()
-              , e5 = t && !t.nodeType && t
-              , e8 = e5 && e && !e.nodeType && e
-              , e9 = e8 && e8.exports === e5
+              , e5 = "object" == typeof self && self && self.Object === Object && self
+              , e4 = e3 || e5 || Function("return this")()
+              , e6 = t && !t.nodeType && t
+              , e8 = e6 && e && !e.nodeType && e
+              , e9 = e8 && e8.exports === e6
               , e7 = e9 && e3.process
               , te = function() {
                 try {
@@ -7534,13 +7608,13 @@ localStorage.setItem('mapIDS','');
                 "&#39;": "'"
             })
               , tW = function e(t) {
-                var n, r, ee, ev, ey = (t = null == t ? e6 : tW.defaults(e6.Object(), t, tW.pick(e6, eK))).Array, eb = t.Date, eE = t.Error, e_ = t.Function, ew = t.Math, eO = t.Object, eA = t.RegExp, eS = t.String, eP = t.TypeError, eI = ey.prototype, eR = e_.prototype, eT = eO.prototype, ex = t["__core-js_shared__"], ek = eR.toString, eC = eT.hasOwnProperty, eN = 0, eL = (n = /[^.]+$/.exec(ex && ex.keys && ex.keys.IE_PROTO || "")) ? "Symbol(src)_1." + n : "", eM = eT.toString, eD = ek.call(eO), ej = e6._, eU = eA("^" + ek.call(eC).replace(J, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"), e$ = e9 ? t.Buffer : i, eV = t.Symbol, eB = t.Uint8Array, eF = e$ ? e$.allocUnsafe : i, eq = tF(eO.getPrototypeOf, eO), eZ = eO.create, eH = eT.propertyIsEnumerable, e0 = eI.splice, e3 = eV ? eV.isConcatSpreadable : i, e4 = eV ? eV.iterator : i, e5 = eV ? eV.toStringTag : i, e8 = function() {
+                var n, r, ee, ev, ey = (t = null == t ? e4 : tW.defaults(e4.Object(), t, tW.pick(e4, eK))).Array, eb = t.Date, eE = t.Error, e_ = t.Function, ew = t.Math, eO = t.Object, eA = t.RegExp, eS = t.String, eP = t.TypeError, eI = ey.prototype, eR = e_.prototype, eT = eO.prototype, ex = t["__core-js_shared__"], ek = eR.toString, eC = eT.hasOwnProperty, eN = 0, eL = (n = /[^.]+$/.exec(ex && ex.keys && ex.keys.IE_PROTO || "")) ? "Symbol(src)_1." + n : "", eM = eT.toString, eD = ek.call(eO), ej = e4._, eU = eA("^" + ek.call(eC).replace(J, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"), e$ = e9 ? t.Buffer : i, eV = t.Symbol, eB = t.Uint8Array, eF = e$ ? e$.allocUnsafe : i, eq = tF(eO.getPrototypeOf, eO), eZ = eO.create, eH = eT.propertyIsEnumerable, e0 = eI.splice, e3 = eV ? eV.isConcatSpreadable : i, e5 = eV ? eV.iterator : i, e6 = eV ? eV.toStringTag : i, e8 = function() {
                     try {
                         var e = ip(eO, "defineProperty");
                         return e({}, "", {}),
                         e
                     } catch (e) {}
-                }(), e7 = t.clearTimeout !== e6.clearTimeout && t.clearTimeout, te = eb && eb.now !== e6.Date.now && eb.now, tb = t.setTimeout !== e6.setTimeout && t.setTimeout, tI = ew.ceil, tK = ew.floor, tJ = eO.getOwnPropertySymbols, tX = e$ ? e$.isBuffer : i, tQ = t.isFinite, t0 = eI.join, t1 = tF(eO.keys, eO), t2 = ew.max, t3 = ew.min, t4 = eb.now, t6 = t.parseInt, t5 = ew.random, t8 = eI.reverse, t9 = ip(t, "DataView"), t7 = ip(t, "Map"), ne = ip(t, "Promise"), nt = ip(t, "Set"), nn = ip(t, "WeakMap"), nr = ip(eO, "create"), ni = nn && new nn, no = {}, na = i$(t9), ns = i$(t7), nl = i$(ne), nu = i$(nt), nc = i$(nn), nd = eV ? eV.prototype : i, nf = nd ? nd.valueOf : i, nh = nd ? nd.toString : i;
+                }(), e7 = t.clearTimeout !== e4.clearTimeout && t.clearTimeout, te = eb && eb.now !== e4.Date.now && eb.now, tb = t.setTimeout !== e4.setTimeout && t.setTimeout, tI = ew.ceil, tK = ew.floor, tJ = eO.getOwnPropertySymbols, tX = e$ ? e$.isBuffer : i, tQ = t.isFinite, t0 = eI.join, t1 = tF(eO.keys, eO), t2 = ew.max, t3 = ew.min, t5 = eb.now, t4 = t.parseInt, t6 = ew.random, t8 = eI.reverse, t9 = ip(t, "DataView"), t7 = ip(t, "Map"), ne = ip(t, "Promise"), nt = ip(t, "Set"), nn = ip(t, "WeakMap"), nr = ip(eO, "create"), ni = nn && new nn, no = {}, na = i$(t9), ns = i$(t7), nl = i$(ne), nu = i$(nt), nc = i$(nn), nd = eV ? eV.prototype : i, nf = nd ? nd.valueOf : i, nh = nd ? nd.toString : i;
                 function np(e) {
                     if (oZ(e) && !oM(e) && !(e instanceof ny)) {
                         if (e instanceof nv)
@@ -8015,15 +8089,15 @@ localStorage.setItem('mapIDS','');
                     return oM(e) ? r : tg(r, n(e))
                 }
                 function nJ(e) {
-                    return null == e ? i === e ? "[object Undefined]" : "[object Null]" : e5 && e5 in eO(e) ? function(e) {
-                        var t = eC.call(e, e5)
-                          , n = e[e5];
+                    return null == e ? i === e ? "[object Undefined]" : "[object Null]" : e6 && e6 in eO(e) ? function(e) {
+                        var t = eC.call(e, e6)
+                          , n = e[e6];
                         try {
-                            e[e5] = i;
+                            e[e6] = i;
                             var r = !0
                         } catch (e) {}
                         var o = eM.call(e);
-                        return r && (t ? e[e5] = n : delete e[e5]),
+                        return r && (t ? e[e6] = n : delete e[e6]),
                         o
                     }(e) : eM.call(e)
                 }
@@ -8070,7 +8144,7 @@ localStorage.setItem('mapIDS','');
                 function n3(e) {
                     return oZ(e) && nJ(e) == d
                 }
-                function n4(e, t, n, r, o) {
+                function n5(e, t, n, r, o) {
                     return e === t || (null != e && null != t && (oZ(e) || oZ(t)) ? function(e, t, n, r, o, a) {
                         var s = oM(e)
                           , l = oM(t)
@@ -8179,9 +8253,9 @@ localStorage.setItem('mapIDS','');
                             a.delete(t),
                             p
                         }(e, t, n, r, o, a))
-                    }(e, t, n, r, n4, o) : e != e && t != t)
+                    }(e, t, n, r, n5, o) : e != e && t != t)
                 }
-                function n6(e, t, n, r) {
+                function n4(e, t, n, r) {
                     var o = n.length
                       , a = o
                       , s = !r;
@@ -8203,13 +8277,13 @@ localStorage.setItem('mapIDS','');
                             var f = new nO;
                             if (r)
                                 var h = r(c, d, u, e, t, f);
-                            if (!(i === h ? n4(d, c, 3, r, f) : h))
+                            if (!(i === h ? n5(d, c, 3, r, f) : h))
                                 return !1
                         }
                     }
                     return !0
                 }
-                function n5(e) {
+                function n6(e) {
                     return !(!oY(e) || eL && eL in e) && (oF(e) ? eU : ed).test(i$(e))
                 }
                 function n8(e) {
@@ -8237,14 +8311,14 @@ localStorage.setItem('mapIDS','');
                 function rt(e) {
                     var t = ih(e);
                     return 1 == t.length && t[0][2] ? iI(t[0][0], t[0][1]) : function(n) {
-                        return n === e || n6(n, e, t)
+                        return n === e || n4(n, e, t)
                     }
                 }
                 function rn(e, t) {
                     var n;
                     return iO(e) && (n = t) == n && !oY(n) ? iI(iU(e), t) : function(n) {
                         var r = as(n, e);
-                        return i === r && r === t ? al(n, e) : n4(t, r, 3)
+                        return i === r && r === t ? al(n, e) : n5(t, r, 3)
                     }
                 }
                 function rr(e, t, n, r, o) {
@@ -8356,7 +8430,7 @@ localStorage.setItem('mapIDS','');
                     return e
                 }
                 function ru(e, t) {
-                    return e + tK(t5() * (t - e + 1))
+                    return e + tK(t6() * (t - e + 1))
                 }
                 function rc(e, t) {
                     var n = "";
@@ -8490,7 +8564,7 @@ localStorage.setItem('mapIDS','');
                         a = !1,
                         i = th;
                     else if (o >= 200) {
-                        var u = t ? null : r5(e);
+                        var u = t ? null : r6(e);
                         if (u)
                             return tG(u);
                         a = !1,
@@ -8564,7 +8638,7 @@ localStorage.setItem('mapIDS','');
                     !t && n >= r ? e : rg(e, t, n)
                 }
                 var rN = e7 || function(e) {
-                    return e6.clearTimeout(e)
+                    return e4.clearTimeout(e)
                 }
                 ;
                 function rL(e, t) {
@@ -8785,7 +8859,7 @@ localStorage.setItem('mapIDS','');
                         y -= w,
                         p && y < c) {
                             var O = tq(b, _);
-                            return r4(e, t, rJ, v.placeholder, n, b, O, l, u, c - y)
+                            return r5(e, t, rJ, v.placeholder, n, b, O, l, u, c - y)
                         }
                         var A = f ? n : this
                           , S = h ? A[e] : e;
@@ -8798,7 +8872,7 @@ localStorage.setItem('mapIDS','');
                             return e
                         }(b, l) : g && y > 1 && b.reverse(),
                         d && u < y && (b.length = u),
-                        this && this !== e6 && this instanceof v && (S = m || rH(S)),
+                        this && this !== e4 && this instanceof v && (S = m || rH(S)),
                         S.apply(A, b)
                     }
                 }
@@ -8851,10 +8925,10 @@ localStorage.setItem('mapIDS','');
                 function r2(e) {
                     return function(t, n, r) {
                         return r && "number" != typeof r && iw(t, n, r) && (n = r = i),
-                        t = o4(t),
+                        t = o5(t),
                         i === n ? (n = t,
-                        t = 0) : n = o4(n),
-                        r = i === r ? t < n ? 1 : -1 : o4(r),
+                        t = 0) : n = o5(n),
+                        r = i === r ? t < n ? 1 : -1 : o5(r),
                         function(e, t, n, r) {
                             for (var i = -1, o = t2(tI((t - e) / (n || 1)), 0), a = ey(o); o--; )
                                 a[r ? o : ++i] = e,
@@ -8870,7 +8944,7 @@ localStorage.setItem('mapIDS','');
                         e(t, n)
                     }
                 }
-                function r4(e, t, n, r, o, a, s, l, u, c) {
+                function r5(e, t, n, r, o, a, s, l, u, c) {
                     var d = 8 & t
                       , f = d ? s : i
                       , h = d ? i : s
@@ -8884,18 +8958,18 @@ localStorage.setItem('mapIDS','');
                     v.placeholder = r,
                     iL(v, e, t)
                 }
-                function r6(e) {
+                function r4(e) {
                     var t = ew[e];
                     return function(e, n) {
                         if (e = o8(e),
-                        (n = null == n ? 0 : t3(o6(n), 292)) && tQ(e)) {
+                        (n = null == n ? 0 : t3(o4(n), 292)) && tQ(e)) {
                             var r = (o7(e) + "e").split("e");
                             return +((r = (o7(t(r[0] + "e" + (+r[1] + n))) + "e").split("e"))[0] + "e" + (+r[1] - n))
                         }
                         return t(e)
                     }
                 }
-                var r5 = nt && 1 / tG(new nt([, -0]))[1] == l ? function(e) {
+                var r6 = nt && 1 / tG(new nt([, -0]))[1] == l ? function(e) {
                     return new nt(e)
                 }
                 : aq;
@@ -8919,8 +8993,8 @@ localStorage.setItem('mapIDS','');
                     var f = r ? r.length : 0;
                     if (f || (t &= -97,
                     r = a = i),
-                    u = i === u ? u : t2(o6(u), 0),
-                    c = i === c ? c : o6(c),
+                    u = i === u ? u : t2(o4(u), 0),
+                    c = i === c ? c : o4(c),
                     f -= a ? a.length : 0,
                     64 & t) {
                         var h = r
@@ -8969,7 +9043,7 @@ localStorage.setItem('mapIDS','');
                             for (var t = arguments.length, n = ey(t), r = t, o = iu(e); r--; )
                                 n[r] = arguments[r];
                             var a = t < 3 && n[0] !== o && n[t - 1] !== o ? [] : tq(n, o);
-                            return (t -= a.length) < b ? r4(v, y, rJ, e.placeholder, i, n, a, i, i, b - t) : ts(this && this !== e6 && this instanceof e ? E : v, this, n)
+                            return (t -= a.length) < b ? r5(v, y, rJ, e.placeholder, i, n, a, i, i, b - t) : ts(this && this !== e4 && this instanceof e ? E : v, this, n)
                         }
                         ) : 32 != t && 33 != t || a.length ? C = rJ.apply(i, m) : (_ = e,
                         w = t,
@@ -8978,7 +9052,7 @@ localStorage.setItem('mapIDS','');
                         S = 1 & w,
                         P = rH(_),
                         C = function e() {
-                            for (var t = -1, n = arguments.length, r = -1, i = A.length, o = ey(i + n), a = this && this !== e6 && this instanceof e ? P : _; ++r < i; )
+                            for (var t = -1, n = arguments.length, r = -1, i = A.length, o = ey(i + n), a = this && this !== e4 && this instanceof e ? P : _; ++r < i; )
                                 o[r] = A[r];
                             for (; n--; )
                                 o[r++] = arguments[++t];
@@ -8992,7 +9066,7 @@ localStorage.setItem('mapIDS','');
                         x = 1 & R,
                         k = rH(I),
                         function e() {
-                            return (this && this !== e6 && this instanceof e ? k : I).apply(x ? T : this, arguments)
+                            return (this && this !== e4 && this instanceof e ? k : I).apply(x ? T : this, arguments)
                         }
                         );
                     return iL((g ? rh : ik)(C, m), e, t)
@@ -9095,7 +9169,7 @@ localStorage.setItem('mapIDS','');
                 }
                 function ip(e, t) {
                     var n = null == e ? i : e[t];
-                    return n5(n) ? n : i
+                    return n6(n) ? n : i
                 }
                 var ig = tJ ? function(e) {
                     return null == e ? [] : td(tJ(e = eO(e)), function(t) {
@@ -9204,7 +9278,7 @@ localStorage.setItem('mapIDS','');
                 }
                 var ik = iM(rh)
                   , iC = tb || function(e, t) {
-                    return e6.setTimeout(e, t)
+                    return e4.setTimeout(e, t)
                 }
                   , iN = iM(rp);
                 function iL(e, t, n) {
@@ -9228,7 +9302,7 @@ localStorage.setItem('mapIDS','');
                     var t = 0
                       , n = 0;
                     return function() {
-                        var r = t4()
+                        var r = t5()
                           , o = 16 - (r - n);
                         if (n = r,
                         o > 0) {
@@ -9307,7 +9381,7 @@ localStorage.setItem('mapIDS','');
                     var r = null == e ? 0 : e.length;
                     if (!r)
                         return -1;
-                    var i = null == n ? 0 : o6(n);
+                    var i = null == n ? 0 : o4(n);
                     return i < 0 && (i = t2(r + i, 0)),
                     t_(e, ic(t, 3), i)
                 }
@@ -9316,7 +9390,7 @@ localStorage.setItem('mapIDS','');
                     if (!r)
                         return -1;
                     var o = r - 1;
-                    return i !== n && (o = o6(n),
+                    return i !== n && (o = o4(n),
                     o = n < 0 ? t2(r + o, 0) : t3(o, r - 1)),
                     t_(e, ic(t, 3), o, !0)
                 }
@@ -9369,12 +9443,12 @@ localStorage.setItem('mapIDS','');
                     return oU(t) && (t = i),
                     rw(nq(e, 1, oU, !0), ic(t, 2))
                 })
-                  , i4 = rd(function(e) {
+                  , i5 = rd(function(e) {
                     var t = iJ(e);
                     return t = "function" == typeof t ? t : i,
                     rw(nq(e, 1, oU, !0), i, t)
                 });
-                function i6(e) {
+                function i4(e) {
                     if (!(e && e.length))
                         return [];
                     var t = 0;
@@ -9387,10 +9461,10 @@ localStorage.setItem('mapIDS','');
                         return tp(e, tP(t))
                     })
                 }
-                function i5(e, t) {
+                function i6(e, t) {
                     if (!(e && e.length))
                         return [];
-                    var n = i6(e);
+                    var n = i4(e);
                     return null == t ? n : tp(n, function(e) {
                         return ts(t, i, e)
                     })
@@ -9411,13 +9485,13 @@ localStorage.setItem('mapIDS','');
                     return t = "function" == typeof t ? t : i,
                     rI(td(e, oU), i, t)
                 })
-                  , ot = rd(i6)
+                  , ot = rd(i4)
                   , on = rd(function(e) {
                     var t = e.length
                       , n = t > 1 ? e[t - 1] : i;
                     return n = "function" == typeof n ? (e.pop(),
                     n) : i,
-                    i5(e, n)
+                    i6(e, n)
                 });
                 function or(e) {
                     var t = np(e);
@@ -9491,7 +9565,7 @@ localStorage.setItem('mapIDS','');
                     ro(e, nq(t, 1), [])
                 })
                   , ov = te || function() {
-                    return e6.Date.now()
+                    return e4.Date.now()
                 }
                 ;
                 function oy(e, t, n) {
@@ -9503,7 +9577,7 @@ localStorage.setItem('mapIDS','');
                     var n;
                     if ("function" != typeof t)
                         throw new eP(o);
-                    return e = o6(e),
+                    return e = o4(e),
                     function() {
                         return --e > 0 && (n = t.apply(this, arguments)),
                         e <= 1 && (t = i),
@@ -9691,7 +9765,7 @@ localStorage.setItem('mapIDS','');
                     return t == m || t == v || "[object AsyncFunction]" == t || "[object Proxy]" == t
                 }
                 function oq(e) {
-                    return "number" == typeof e && e == o6(e)
+                    return "number" == typeof e && e == o4(e)
                 }
                 function oG(e) {
                     return "number" == typeof e && e > -1 && e % 1 == 0 && e <= 9007199254740991
@@ -9744,25 +9818,25 @@ localStorage.setItem('mapIDS','');
                         return [];
                     if (oj(e))
                         return oX(e) ? tZ(e) : rV(e);
-                    if (e4 && e[e4])
+                    if (e5 && e[e5])
                         return function(e) {
                             for (var t, n = []; !(t = e.next()).done; )
                                 n.push(t.value);
                             return n
-                        }(e[e4]());
+                        }(e[e5]());
                     var t = iv(e);
                     return (t == y ? tB : t == O ? tG : a_)(e)
                 }
-                function o4(e) {
+                function o5(e) {
                     return e ? (e = o8(e)) === l || e === -l ? (e < 0 ? -1 : 1) * 17976931348623157e292 : e == e ? e : 0 : 0 === e ? e : 0
                 }
-                function o6(e) {
-                    var t = o4(e)
+                function o4(e) {
+                    var t = o5(e)
                       , n = t % 1;
                     return t == t ? n ? t - n : t : 0
                 }
-                function o5(e) {
-                    return e ? nN(o6(e), 0, 4294967295) : 0
+                function o6(e) {
+                    return e ? nN(o4(e), 0, 4294967295) : 0
                 }
                 function o8(e) {
                     if ("number" == typeof e)
@@ -10022,22 +10096,22 @@ localStorage.setItem('mapIDS','');
                 var aX = rQ(function(e, t) {
                     return e + t
                 }, 0)
-                  , aQ = r6("ceil")
+                  , aQ = r4("ceil")
                   , a0 = rQ(function(e, t) {
                     return e / t
                 }, 1)
-                  , a1 = r6("floor")
+                  , a1 = r4("floor")
                   , a2 = rQ(function(e, t) {
                     return e * t
                 }, 1)
-                  , a3 = r6("round")
-                  , a4 = rQ(function(e, t) {
+                  , a3 = r4("round")
+                  , a5 = rQ(function(e, t) {
                     return e - t
                 }, 0);
                 return np.after = function(e, t) {
                     if ("function" != typeof t)
                         throw new eP(o);
-                    return e = o6(e),
+                    return e = o4(e),
                     function() {
                         if (--e < 1)
                             return t.apply(this, arguments)
@@ -10063,7 +10137,7 @@ localStorage.setItem('mapIDS','');
                 ,
                 np.chain = or,
                 np.chunk = function(e, t, n) {
-                    t = (n ? iw(e, t, n) : i === t) ? 1 : t2(o6(t), 0);
+                    t = (n ? iw(e, t, n) : i === t) ? 1 : t2(o4(t), 0);
                     var r = null == e ? 0 : e.length;
                     if (!r || t < 1)
                         return [];
@@ -10145,12 +10219,12 @@ localStorage.setItem('mapIDS','');
                 np.differenceWith = iq,
                 np.drop = function(e, t, n) {
                     var r = null == e ? 0 : e.length;
-                    return r ? rg(e, (t = n || i === t ? 1 : o6(t)) < 0 ? 0 : t, r) : []
+                    return r ? rg(e, (t = n || i === t ? 1 : o4(t)) < 0 ? 0 : t, r) : []
                 }
                 ,
                 np.dropRight = function(e, t, n) {
                     var r = null == e ? 0 : e.length;
-                    return r ? rg(e, 0, (t = r - (t = n || i === t ? 1 : o6(t))) < 0 ? 0 : t) : []
+                    return r ? rg(e, 0, (t = r - (t = n || i === t ? 1 : o4(t))) < 0 ? 0 : t) : []
                 }
                 ,
                 np.dropRightWhile = function(e, t) {
@@ -10167,9 +10241,9 @@ localStorage.setItem('mapIDS','');
                     r = o),
                     function(e, t, n, r) {
                         var o = e.length;
-                        for ((n = o6(n)) < 0 && (n = -n > o ? 0 : o + n),
-                        (r = i === r || r > o ? o : o6(r)) < 0 && (r += o),
-                        r = n > r ? 0 : o5(r); n < r; )
+                        for ((n = o4(n)) < 0 && (n = -n > o ? 0 : o + n),
+                        (r = i === r || r > o ? o : o4(r)) < 0 && (r += o),
+                        r = n > r ? 0 : o6(r); n < r; )
                             e[n++] = t;
                         return e
                     }(e, t, n, r)) : []
@@ -10188,7 +10262,7 @@ localStorage.setItem('mapIDS','');
                 }
                 ,
                 np.flatMapDepth = function(e, t, n) {
-                    return n = i === n ? 1 : o6(n),
+                    return n = i === n ? 1 : o4(n),
                     nq(op(e, t), n)
                 }
                 ,
@@ -10198,7 +10272,7 @@ localStorage.setItem('mapIDS','');
                 }
                 ,
                 np.flattenDepth = function(e, t) {
-                    return (null == e ? 0 : e.length) ? nq(e, t = i === t ? 1 : o6(t)) : []
+                    return (null == e ? 0 : e.length) ? nq(e, t = i === t ? 1 : o4(t)) : []
                 }
                 ,
                 np.flip = function(e) {
@@ -10273,7 +10347,7 @@ localStorage.setItem('mapIDS','');
                 np.mixin = aF,
                 np.negate = oP,
                 np.nthArg = function(e) {
-                    return e = o6(e),
+                    return e = o4(e),
                     rd(function(t) {
                         return ri(t, e)
                     })
@@ -10347,12 +10421,12 @@ localStorage.setItem('mapIDS','');
                 np.rest = function(e, t) {
                     if ("function" != typeof e)
                         throw new eP(o);
-                    return rd(e, t = i === t ? t : o6(t))
+                    return rd(e, t = i === t ? t : o4(t))
                 }
                 ,
                 np.reverse = i1,
                 np.sampleSize = function(e, t, n) {
-                    return t = (n ? iw(e, t, n) : i === t) ? 1 : o6(t),
+                    return t = (n ? iw(e, t, n) : i === t) ? 1 : o4(t),
                     (oM(e) ? function(e, t) {
                         return iD(rV(e), nN(t, 0, e.length))
                     }
@@ -10385,8 +10459,8 @@ localStorage.setItem('mapIDS','');
                 np.slice = function(e, t, n) {
                     var r = null == e ? 0 : e.length;
                     return r ? (n && "number" != typeof n && iw(e, t, n) ? (t = 0,
-                    n = r) : (t = null == t ? 0 : o6(t),
-                    n = i === n ? r : o6(n)),
+                    n = r) : (t = null == t ? 0 : o4(t),
+                    n = i === n ? r : o4(n)),
                     rg(e, t, n)) : []
                 }
                 ,
@@ -10407,7 +10481,7 @@ localStorage.setItem('mapIDS','');
                 np.spread = function(e, t) {
                     if ("function" != typeof e)
                         throw new eP(o);
-                    return t = null == t ? 0 : t2(o6(t), 0),
+                    return t = null == t ? 0 : t2(o4(t), 0),
                     rd(function(n) {
                         var r = n[t]
                           , i = rC(n, 0, t);
@@ -10422,12 +10496,12 @@ localStorage.setItem('mapIDS','');
                 }
                 ,
                 np.take = function(e, t, n) {
-                    return e && e.length ? rg(e, 0, (t = n || i === t ? 1 : o6(t)) < 0 ? 0 : t) : []
+                    return e && e.length ? rg(e, 0, (t = n || i === t ? 1 : o4(t)) < 0 ? 0 : t) : []
                 }
                 ,
                 np.takeRight = function(e, t, n) {
                     var r = null == e ? 0 : e.length;
-                    return r ? rg(e, (t = r - (t = n || i === t ? 1 : o6(t))) < 0 ? 0 : t, r) : []
+                    return r ? rg(e, (t = r - (t = n || i === t ? 1 : o4(t))) < 0 ? 0 : t, r) : []
                 }
                 ,
                 np.takeRightWhile = function(e, t) {
@@ -10486,7 +10560,7 @@ localStorage.setItem('mapIDS','');
                 ,
                 np.union = i2,
                 np.unionBy = i3,
-                np.unionWith = i4,
+                np.unionWith = i5,
                 np.uniq = function(e) {
                     return e && e.length ? rw(e) : []
                 }
@@ -10504,8 +10578,8 @@ localStorage.setItem('mapIDS','');
                     return null == e || rO(e, t)
                 }
                 ,
-                np.unzip = i6,
-                np.unzipWith = i5,
+                np.unzip = i4,
+                np.unzipWith = i6,
                 np.update = function(e, t, n) {
                     return null == e ? e : rA(e, t, rx(n))
                 }
@@ -10587,7 +10661,7 @@ localStorage.setItem('mapIDS','');
                     e = o7(e),
                     t = r_(t);
                     var r = e.length
-                      , o = n = i === n ? r : nN(o6(n), 0, r);
+                      , o = n = i === n ? r : nN(o4(n), 0, r);
                     return (n -= t.length) >= 0 && e.slice(n, o) == t
                 }
                 ,
@@ -10649,7 +10723,7 @@ localStorage.setItem('mapIDS','');
                 np.identity = aU,
                 np.includes = function(e, t, n, r) {
                     e = oj(e) ? e : a_(e),
-                    n = n && !r ? o6(n) : 0;
+                    n = n && !r ? o4(n) : 0;
                     var i = e.length;
                     return n < 0 && (n = t2(i + n, 0)),
                     oX(e) ? n <= i && e.indexOf(t, n) > -1 : !!i && tw(e, t, n) > -1
@@ -10659,16 +10733,16 @@ localStorage.setItem('mapIDS','');
                     var r = null == e ? 0 : e.length;
                     if (!r)
                         return -1;
-                    var i = null == n ? 0 : o6(n);
+                    var i = null == n ? 0 : o4(n);
                     return i < 0 && (i = t2(r + i, 0)),
                     tw(e, t, i)
                 }
                 ,
                 np.inRange = function(e, t, n) {
                     var r, o, a;
-                    return t = o4(t),
+                    return t = o5(t),
                     i === n ? (n = t,
-                    t = 0) : n = o4(n),
+                    t = 0) : n = o5(n),
                     (r = e = o8(e)) >= t3(o = t, a = n) && r < t2(o, a)
                 }
                 ,
@@ -10705,12 +10779,12 @@ localStorage.setItem('mapIDS','');
                 }
                 ,
                 np.isEqual = function(e, t) {
-                    return n4(e, t)
+                    return n5(e, t)
                 }
                 ,
                 np.isEqualWith = function(e, t, n) {
                     var r = (n = "function" == typeof n ? n : i) ? n(e, t) : i;
-                    return i === r ? n4(e, t, i, n) : !!r
+                    return i === r ? n5(e, t, i, n) : !!r
                 }
                 ,
                 np.isError = oB,
@@ -10723,12 +10797,12 @@ localStorage.setItem('mapIDS','');
                 np.isLength = oG,
                 np.isMap = oz,
                 np.isMatch = function(e, t) {
-                    return e === t || n6(e, t, ih(t))
+                    return e === t || n4(e, t, ih(t))
                 }
                 ,
                 np.isMatchWith = function(e, t, n) {
                     return n = "function" == typeof n ? n : i,
-                    n6(e, t, ih(t), n)
+                    n4(e, t, ih(t), n)
                 }
                 ,
                 np.isNaN = function(e) {
@@ -10738,7 +10812,7 @@ localStorage.setItem('mapIDS','');
                 np.isNative = function(e) {
                     if (iS(e))
                         throw new eE("Unsupported core-js use. Try https://npms.io/search?q=ponyfill.");
-                    return n5(e)
+                    return n6(e)
                 }
                 ,
                 np.isNil = function(e) {
@@ -10785,7 +10859,7 @@ localStorage.setItem('mapIDS','');
                     if (!r)
                         return -1;
                     var o = r;
-                    return i !== n && (o = (o = o6(n)) < 0 ? t2(r + o, 0) : t3(o, r - 1)),
+                    return i !== n && (o = (o = o4(n)) < 0 ? t2(r + o, 0) : t3(o, r - 1)),
                     t == t ? function(e, t, n) {
                         for (var r = n + 1; r-- && e[r] !== t; )
                             ;
@@ -10837,11 +10911,11 @@ localStorage.setItem('mapIDS','');
                 ,
                 np.multiply = a2,
                 np.nth = function(e, t) {
-                    return e && e.length ? ri(e, o6(t)) : i
+                    return e && e.length ? ri(e, o4(t)) : i
                 }
                 ,
                 np.noConflict = function() {
-                    return e6._ === this && (e6._ = ej),
+                    return e4._ === this && (e4._ = ej),
                     this
                 }
                 ,
@@ -10849,7 +10923,7 @@ localStorage.setItem('mapIDS','');
                 np.now = ov,
                 np.pad = function(e, t, n) {
                     e = o7(e);
-                    var r = (t = o6(t)) ? tY(e) : 0;
+                    var r = (t = o4(t)) ? tY(e) : 0;
                     if (!t || r >= t)
                         return e;
                     var i = (t - r) / 2;
@@ -10858,19 +10932,19 @@ localStorage.setItem('mapIDS','');
                 ,
                 np.padEnd = function(e, t, n) {
                     e = o7(e);
-                    var r = (t = o6(t)) ? tY(e) : 0;
+                    var r = (t = o4(t)) ? tY(e) : 0;
                     return t && r < t ? e + r1(t - r, n) : e
                 }
                 ,
                 np.padStart = function(e, t, n) {
                     e = o7(e);
-                    var r = (t = o6(t)) ? tY(e) : 0;
+                    var r = (t = o4(t)) ? tY(e) : 0;
                     return t && r < t ? r1(t - r, n) + e : e
                 }
                 ,
                 np.parseInt = function(e, t, n) {
                     return n || null == t ? t = 0 : t && (t = +t),
-                    t6(o7(e).replace(Q, ""), t || 0)
+                    t4(o7(e).replace(Q, ""), t || 0)
                 }
                 ,
                 np.random = function(e, t, n) {
@@ -10879,16 +10953,16 @@ localStorage.setItem('mapIDS','');
                     t = i) : "boolean" == typeof e && (n = e,
                     e = i)),
                     i === e && i === t ? (e = 0,
-                    t = 1) : (e = o4(e),
+                    t = 1) : (e = o5(e),
                     i === t ? (t = e,
-                    e = 0) : t = o4(t)),
+                    e = 0) : t = o5(t)),
                     e > t) {
                         var r = e;
                         e = t,
                         t = r
                     }
                     if (n || e % 1 || t % 1) {
-                        var o = t5();
+                        var o = t6();
                         return t3(e + o * (t - e + e1("1e-" + ((o + "").length - 1))), t)
                     }
                     return ru(e, t)
@@ -10907,7 +10981,7 @@ localStorage.setItem('mapIDS','');
                 }
                 ,
                 np.repeat = function(e, t, n) {
-                    return t = (n ? iw(e, t, n) : i === t) ? 1 : o6(t),
+                    return t = (n ? iw(e, t, n) : i === t) ? 1 : o4(t),
                     rc(o7(e), t)
                 }
                 ,
@@ -10994,12 +11068,12 @@ localStorage.setItem('mapIDS','');
                 np.startCase = aT,
                 np.startsWith = function(e, t, n) {
                     return e = o7(e),
-                    n = null == n ? 0 : nN(o6(n), 0, e.length),
+                    n = null == n ? 0 : nN(o4(n), 0, e.length),
                     t = r_(t),
                     e.slice(n, n + t.length) == t
                 }
                 ,
-                np.subtract = a4,
+                np.subtract = a5,
                 np.sum = function(e) {
                     return e && e.length ? tT(e, aU) : 0
                 }
@@ -11044,7 +11118,7 @@ localStorage.setItem('mapIDS','');
                 }
                 ,
                 np.times = function(e, t) {
-                    if ((e = o6(e)) < 1 || e > 9007199254740991)
+                    if ((e = o4(e)) < 1 || e > 9007199254740991)
                         return [];
                     var n = 4294967295
                       , r = t3(e, 4294967295);
@@ -11055,16 +11129,16 @@ localStorage.setItem('mapIDS','');
                     return i
                 }
                 ,
-                np.toFinite = o4,
-                np.toInteger = o6,
-                np.toLength = o5,
+                np.toFinite = o5,
+                np.toInteger = o4,
+                np.toLength = o6,
                 np.toLower = function(e) {
                     return o7(e).toLowerCase()
                 }
                 ,
                 np.toNumber = o8,
                 np.toSafeInteger = function(e) {
-                    return e ? nN(o6(e), -9007199254740991, 9007199254740991) : 0 === e ? e : 0
+                    return e ? nN(o4(e), -9007199254740991, 9007199254740991) : 0 === e ? e : 0
                 }
                 ,
                 np.toString = o7,
@@ -11109,7 +11183,7 @@ localStorage.setItem('mapIDS','');
                       , r = "...";
                     if (oY(t)) {
                         var o = "separator"in t ? t.separator : o;
-                        n = "length"in t ? o6(t.length) : n,
+                        n = "length"in t ? o4(t.length) : n,
                         r = "omission"in t ? r_(t.omission) : r
                     }
                     var a = (e = o7(e)).length;
@@ -11168,7 +11242,7 @@ localStorage.setItem('mapIDS','');
                 }),
                 tu(["drop", "take"], function(e, t) {
                     ny.prototype[e] = function(n) {
-                        n = i === n ? 1 : t2(o6(n), 0);
+                        n = i === n ? 1 : t2(o4(n), 0);
                         var r = this.__filtered__ && !t ? new ny(this) : this.clone();
                         return r.__filtered__ ? r.__takeCount__ = t3(n, r.__takeCount__) : r.__views__.push({
                             size: t3(n, 4294967295),
@@ -11228,10 +11302,10 @@ localStorage.setItem('mapIDS','');
                 }
                 ,
                 ny.prototype.slice = function(e, t) {
-                    e = o6(e);
+                    e = o4(e);
                     var n = this;
                     return n.__filtered__ && (e > 0 || t < 0) ? new ny(n) : (e < 0 ? n = n.takeRight(-e) : e && (n = n.drop(e)),
-                    i !== t && (n = (t = o6(t)) < 0 ? n.dropRight(-t) : n.take(t - e)),
+                    i !== t && (n = (t = o4(t)) < 0 ? n.dropRight(-t) : n.take(t - e)),
                     n)
                 }
                 ,
@@ -11441,13 +11515,13 @@ localStorage.setItem('mapIDS','');
                 }
                 ,
                 np.prototype.first = np.prototype.head,
-                e4 && (np.prototype[e4] = function() {
+                e5 && (np.prototype[e5] = function() {
                     return this
                 }
                 ),
                 np
             }();
-            e6._ = tW,
+            e4._ = tW,
             i !== (r = (function() {
                 return tW
             }
@@ -11548,11 +11622,11 @@ localStorage.setItem('mapIDS','');
     },
     6840: function(e, t, n) {
         (window.__NEXT_P = window.__NEXT_P || []).push(["/_app", function() {
-            return n(72184)
+            return n(53994)
         }
         ])
     },
-    32701: function(e, t, n) {
+    43978: function(e, t, n) {
         "use strict";
         n.d(t, {
             T: function() {
@@ -11562,13 +11636,13 @@ localStorage.setItem('mapIDS','');
         var r = n(85893);
         n(67294);
         var i = n(66005)
-          , o = n(21293)
+          , o = n(12650)
           , a = n.n(o)
           , s = n(15103)
           , l = n(48583)
-          , u = n(29409)
-          , c = n(35466)
-          , d = n(68069);
+          , u = n(25115)
+          , c = n(58577)
+          , d = n(69174);
         let f = (0,
         s.cn)("")
           , h = (0,
@@ -11683,7 +11757,7 @@ localStorage.setItem('mapIDS','');
             })
         }
     },
-    68069: function(e, t, n) {
+    69174: function(e, t, n) {
         "use strict";
         n.d(t, {
             R: function() {
@@ -11694,8 +11768,8 @@ localStorage.setItem('mapIDS','');
             }
         });
         var r = n(67294)
-          , i = n(75268)
-          , o = n(57295);
+          , i = n(34923)
+          , o = n(50762);
         function a(e) {
             let[t,n] = r.useState(!1)
               , i = r.useMemo( () => e ? o.Z.preloadedBlob(e) : "", [e, t]);
@@ -11710,7 +11784,7 @@ localStorage.setItem('mapIDS','');
             return a("".concat(i.fd).concat(e || "upcoming", ".png"))
         }
     },
-    16497: function(e, t, n) {
+    70069: function(e, t, n) {
         "use strict";
         n.d(t, {
             Bf: function() {
@@ -11748,10 +11822,10 @@ localStorage.setItem('mapIDS','');
             }
         });
         var r = n(36609)
-          , i = n(53059)
-          , o = n(35466)
-          , a = n(29409)
-          , s = n(11941);
+          , i = n(64798)
+          , o = n(58577)
+          , a = n(25115)
+          , s = n(89015);
         function l(e) {
             let {days: t=0, hours: n=0, minutes: r=0, seconds: i=0, ms: o=0} = e;
             return o + 1e3 * i + 6e4 * r + 36e5 * n + 864e5 * t
@@ -11848,8 +11922,7 @@ localStorage.setItem('mapIDS','');
                     n.height = null === (l = t.sprite.size) || void 0 === l ? void 0 : l.height,
                     n.height <= 40 && n.width <= 40 ? n.scale = 3 : n.height <= 90 && n.width <= 90 ? n.scale = 2 : n.scale = 1,
                     n.width && n.height && (n.width *= n.scale,
-                    n.height *= n.scale),
-                    console.log("using object image with scale ".concat(n.scale, " ").concat(n.width)))
+                    n.height *= n.scale))
                 }
             }
             return n.image = (0,
@@ -11877,7 +11950,7 @@ localStorage.setItem('mapIDS','');
             return "".concat(null == e ? void 0 : e.replace(/\)|\(/g, "_"), "_").concat(t)
         }
     },
-    14411: function(e, t, n) {
+    63187: function(e, t, n) {
         "use strict";
         n.d(t, {
             LB: function() {
@@ -11894,19 +11967,19 @@ localStorage.setItem('mapIDS','');
           , i = !1
           , o = "".concat("https", "://").concat("pixels-server.pixels.xyz")
     },
-    73913: function(e, t, n) {
+    48085: function(e, t, n) {
         "use strict";
         let r;
         n.d(t, {
             l: function() {
-                return R
+                return T
             }
         });
         var i = n(7767)
-          , o = n(80919)
+          , o = n(34257)
           , a = n(96721)
-          , s = n(53059)
-          , l = n(75268)
+          , s = n(64798)
+          , l = n(34923)
           , u = n(23493)
           , c = n.n(u)
           , d = n(7654)
@@ -12044,7 +12117,7 @@ localStorage.setItem('mapIDS','');
                 this.queue = []
             }
         }
-        var g = n(18062);
+        var g = n(65724);
         let m = e => {
             let t = []
               , n = [];
@@ -12144,23 +12217,24 @@ localStorage.setItem('mapIDS','');
                 this.client = e
             }
         }
-        var b = n(29409)
-          , E = n(11941)
-          , _ = n(31040)
+        var b = n(25115)
+          , E = n(89015)
+          , _ = n(67)
           , w = n(53518)
-          , O = n(67446);
+          , O = n(54552);
         function A(e) {
             return JSON.parse(JSON.stringify(e))
         }
         let S = "".concat("wss", "://").concat("pixels-server.pixels.xyz")
           , P = null
-          , I = {
+          , I = 0
+          , R = {
             [o.Yi.PLAYER_MOVING]: {
                 command: a.mY.moveSelfPlayer,
                 throttle: !0,
                 adapter: e => {
                     let t = -4 & Math.floor(Date.now() / 1e5);
-                    return [Math.round(e.position.x) * (t % 1e3) + Math.round(e.position.y) * (t % 23) + t % 111, e.position.x, e.position.y, e.velocity.x, e.velocity.y]
+                    return [Math.round(e.position.x) * (t % 1e3) + Math.round(e.position.y) * (t % 23) + t % 111, e.position.x, e.position.y, e.velocity.x, e.velocity.y, Date.now() - I]
                 }
             },
             [o.qM.PLAYER_USED_ITEM]: {
@@ -12168,6 +12242,7 @@ localStorage.setItem('mapIDS','');
                 adapter: e => {
                     var t, n, r, i, o, a, s;
                     return {
+                        ts: Date.now() - I,
                         id: null === (t = e.item) || void 0 === t ? void 0 : t.id,
                         type: null === (n = e.target) || void 0 === n ? void 0 : n.type,
                         slot: null === (r = e.item) || void 0 === r ? void 0 : r.inventorySlot,
@@ -12179,7 +12254,11 @@ localStorage.setItem('mapIDS','');
                 }
             },
             [a.mY.clickEntity]: {
-                command: a.mY.clickEntity
+                command: a.mY.clickEntity,
+                adapter: e => ({
+                    ...e,
+                    ts: Date.now() - I
+                })
             },
             [a.mY.timerCheck]: {
                 command: a.mY.timerCheck,
@@ -12190,7 +12269,10 @@ localStorage.setItem('mapIDS','');
             },
             [o.qM.PLAYER_CLICKED_NPC]: {
                 command: a.mY.talkToNPC,
-                adapter: e => e
+                adapter: e => ({
+                    ...e,
+                    ts: Date.now() - I
+                })
             },
             [o.Yi.NPCDIALOG_CLOSE]: {
                 command: a.mY.closeDialog,
@@ -12200,7 +12282,8 @@ localStorage.setItem('mapIDS','');
                 command: a.mY.collideWithObject,
                 adapter: e => ({
                     objectId: e.targetId,
-                    trigger: e.trigger
+                    trigger: e.trigger,
+                    ts: Date.now() - I
                 })
             },
             [o.Yi.NFT_SELECTED]: {
@@ -12236,10 +12319,18 @@ localStorage.setItem('mapIDS','');
                 command: a.mY.subscribe
             },
             [o.Yi.BUY_STORE_ITEM]: {
-                command: a.mY.buyStoreItem
+                command: a.mY.buyStoreItem,
+                adapter: e => ({
+                    ...e,
+                    ts: Date.now() - I
+                })
             },
             [o.Yi.SELL_STORE_ITEM]: {
-                command: a.mY.sellStoreItem
+                command: a.mY.sellStoreItem,
+                adapter: e => ({
+                    ...e,
+                    ts: Date.now() - I
+                })
             },
             [o.fb.BOOKMARK_MAP]: {
                 command: a.mY.bookmarkMap
@@ -12258,7 +12349,7 @@ localStorage.setItem('mapIDS','');
             [o.qM.BUILD_ENTITY]: {
                 command: a.mY.buildEntity,
                 adapter: e => (r || (r = new p),
-                r.pushEntity(e, R.getInstance().getMapEntities()),
+                r.pushEntity(e, T.getInstance().getMapEntities()),
                 e)
             },
             [o.qM.UPGRADE_FARM]: {
@@ -12287,7 +12378,11 @@ localStorage.setItem('mapIDS','');
                 command: a.mY.trade
             },
             [o.fb.MARKETPLACE_SEND]: {
-                command: a.mY.marketplace
+                command: a.mY.marketplace,
+                adapter: e => ({
+                    ...e,
+                    ts: Date.now() - I
+                })
             },
             [o.fb.REPORT_PLAYER]: {
                 command: a.mY.reportPlayer
@@ -12296,7 +12391,11 @@ localStorage.setItem('mapIDS','');
                 command: a.mY.fetchMailbox
             },
             [o.Yi.COLLECT_MAIL_ITEM]: {
-                command: a.mY.collectMailboxItem
+                command: a.mY.collectMailboxItem,
+                adapter: e => ({
+                    ...e,
+                    ts: Date.now() - I
+                })
             },
             [o.Yi.MINT_UGC]: {
                 command: a.mY.mintUgc
@@ -12308,7 +12407,7 @@ localStorage.setItem('mapIDS','');
                 })
             }
         };
-        class R {
+        class T {
             get chatMessages() {
                 var e;
                 return null === (e = this.room) || void 0 === e ? void 0 : e.state.chatMessages
@@ -12348,9 +12447,13 @@ localStorage.setItem('mapIDS','');
                 var e, t;
                 return null !== (t = null === (e = this.room) || void 0 === e ? void 0 : e.state.mpBuy) && void 0 !== t ? t : 700
             }
+            get mapLimits() {
+                var e;
+                return null === (e = this.room) || void 0 === e ? void 0 : e.state.limits
+            }
             static getInstance() {
-                return R.singleton || (R.singleton = new R),
-                R.singleton
+                return T.singleton || (T.singleton = new T),
+                T.singleton
             }
             getMapEntities() {
                 var e, t;
@@ -12425,7 +12528,7 @@ localStorage.setItem('mapIDS','');
                     this.room.send(e, t)
                 }
                 ;
-                Object.entries(I).forEach(t => {
+                Object.entries(R).forEach(t => {
                     let[n,r] = t
                       , i = r.throttle ? c()(e, 250) : e;
                     o.ZP.registerEventListener(n, e => {
@@ -12571,14 +12674,15 @@ localStorage.setItem('mapIDS','');
                     o.ZP.emitEventNow(o.fb.ROOM_OWNERSHIP_CHANGED, e)
                 }
                 ),
-                this.room.state.members.onChange( () => {
-                    if (!this.room)
-                        return;
-                    let e = A(this.room.state.members);
-                    o.ZP.emitEventNow(o.fb.ROOM_MEMBERS_CHANGED, e)
+                this.room.state.members.onAdd(e => {
+                    this.monitorMember(e)
                 }
                 ),
-                this.room.state.labels.onAdd( () => {
+                this.room.state.members.onChange( () => {
+                    this.updatedMembers = !0
+                }
+                ),
+                this.room.state.labels.onChange( () => {
                     var e;
                     if (!this.room)
                         return;
@@ -12774,9 +12878,12 @@ localStorage.setItem('mapIDS','');
                 this.updatedPet = !1),
                 this.updatedInventory && (this.inventoryChanged(),
                 this.updatedInventory = !1),
+                this.updatedMembers && (this.membersChanged(),
+                this.updatedMembers = !1),
                 this.wardrobeChanged()
             }
             handleRoomUpdates() {
+                var e;
                 if (!this.room)
                     return;
                 this.room.onStateChange( () => {
@@ -12802,6 +12909,10 @@ localStorage.setItem('mapIDS','');
                     })
                 }
                 ),
+                null === (e = this.room.state.limits) || void 0 === e || e.onChange( () => {
+                    this.room && o.ZP.emitEventNow(o.fb.ROOM_LIMITS_CHANGED, A(this.mapLimits))
+                }
+                ),
                 this.room.state.chatMessages.onAdd(e => {
                     var t;
                     (null === (t = this.room) || void 0 === t ? void 0 : t.state) && "private" !== this.room.state.type && "tutorial" !== this.room.state.type && o.ZP.emitEventNow(o.fb.CHAT_MESSAGE_RCV, {
@@ -12809,12 +12920,12 @@ localStorage.setItem('mapIDS','');
                     })
                 }
                 , !1);
-                let e = this.room.state.storage;
-                (null == e ? void 0 : e.slots) && (e.slots.onAdd(e => {
+                let t = this.room.state.storage;
+                (null == t ? void 0 : t.slots) && (t.slots.onAdd(e => {
                     this.monitorSlot(e)
                 }
                 ),
-                e.slots.onRemove( () => this.updatedInventory = !0)),
+                t.slots.onRemove( () => this.updatedInventory = !0)),
                 this.room.state.levels.onAdd( (e, t) => {
                     let n = A(e);
                     o.ZP.emitEventNow(o.fb.ROOM_LEVEL_ADD, {
@@ -12906,7 +13017,7 @@ localStorage.setItem('mapIDS','');
                             this.client.joinById(o, e).then(e => t(e)).catch(t => {
                                 console.error("error from colyseus", JSON.stringify(t)),
                                 a = null == t ? void 0 : t.message,
-                                R.permanentErrors.includes(a) ? n(t) : R.retryErrors.includes(a) && i < 8 ? (r = t,
+                                T.permanentErrors.includes(a) ? n(t) : T.retryErrors.includes(a) && i < 8 ? (r = t,
                                 setTimeout(s, 5e3 + 1500 * i),
                                 i += 1) : ("need-recaptcha" !== a || e.recaptcha) && ("need-telemetry" !== a || e.telemetryId) ? i >= 2 ? (null == t ? void 0 : t.code) == 1006 && r ? n(r) : n(t) : ((null == t ? void 0 : t.code) != 1006 && (r = t),
                                 setTimeout(s, 3e3),
@@ -12918,7 +13029,7 @@ localStorage.setItem('mapIDS','');
                         ).catch(e => {
                             console.error("error from getRoomId", JSON.stringify(e)),
                             a = null == e ? void 0 : e.message,
-                            R.permanentErrors.includes(null == e ? void 0 : e.message) ? n(e) : i >= 2 ? n(e) : (setTimeout(s, 3e3),
+                            T.permanentErrors.includes(null == e ? void 0 : e.message) ? n(e) : i >= 2 ? n(e) : (setTimeout(s, 3e3),
                             i += 1)
                         }
                         )
@@ -12929,15 +13040,15 @@ localStorage.setItem('mapIDS','');
                 )
             }
             async connect(e, t, n, u, c, d, h, p, m) {
-                var v, y;
+                var v, y, b;
                 this.scene = u,
                 this.firstLoad && (this.registerEvents(),
                 this.firstLoad = !1);
-                let b = {};
+                let E = {};
                 if (n) {
                     let e = n.split(",");
-                    b.label = e[0],
-                    e.length >= 3 && (b.offset = {
+                    E.label = e[0],
+                    e.length >= 3 && (E.offset = {
                         x: parseInt(e[1], 10),
                         y: parseInt(e[2], 10)
                     })
@@ -12965,14 +13076,15 @@ localStorage.setItem('mapIDS','');
                         playerId: p,
                         world: t,
                         ver: l.WX,
-                        ...b,
+                        ...E,
                         avatar: c || !d ? "" : JSON.stringify(d),
                         lastSavedAt: m
-                    })
+                    }),
+                    I = Date.now()
                 } catch (e) {
                     if ((null == e ? void 0 : e.code) === w.m.SERVER_MAINTENANCE)
                         o.ZP.emitEventNow(o.fb.SVR_CANNOTCONNECT, {
-                            message: null !== (v = e.message) && void 0 !== v ? v : "server-maintenance"
+                            message: null !== (y = e.message) && void 0 !== y ? y : "server-maintenance"
                         });
                     else if ((null == e ? void 0 : e.code) === w.m.PLAYER_BANNED) {
                         let t = e.message.split("+|=|+")
@@ -13019,7 +13131,7 @@ localStorage.setItem('mapIDS','');
                 }
                 this.playerSerializer = new i.mV,
                 this.playerHandshake && this.playerSerializer.handshake(this.playerHandshake);
-                let E = new Promise(e => {
+                let _ = new Promise(e => {
                     var t, n;
                     null === (t = this.room) || void 0 === t || t.onMessage(a.mY.handshake, e => {
                         this.playerHandshake = e,
@@ -13033,7 +13145,7 @@ localStorage.setItem('mapIDS','');
                     )
                 }
                 )
-                  , _ = new Promise(e => {
+                  , O = new Promise(e => {
                     var t;
                     null === (t = this.room) || void 0 === t || t.onMessage(a.mY.sendMapLibrary, t => {
                         s.Z.setMapLibrary(t),
@@ -13043,29 +13155,29 @@ localStorage.setItem('mapIDS','');
                 }
                 );
                 this.handleRoomEvents();
-                let O = new Promise(e => {
+                let S = new Promise(e => {
                     this.room.onStateChange.once( () => {
                         e(this.room.state.players.get(this.room.sessionId))
                     }
                     )
                 }
                 );
-                await Promise.all([O, E, _]),
-                this.selfPlayer = await E;
-                let S = await O;
-                if (S || (S = await new Promise(e => {
+                await Promise.all([S, _, O]),
+                this.selfPlayer = await _;
+                let R = await S;
+                if (R || (R = await new Promise(e => {
                     this.room.onStateChange.once( () => {
                         e(this.room.state.players.get(this.room.sessionId))
                     }
                     )
                 }
                 )),
-                await s.Z.scanGameLibrary(this.room.state.entities),
-                this.selfPlayer && S) {
+                await s.Z.scanGameLibrary(this.room.state.entities, null === (v = this.selfPlayer) || void 0 === v ? void 0 : v.inventory),
+                this.selfPlayer && R) {
                     let e = A(this.currentPlayer);
-                    (null === (y = e.full.pet) || void 0 === y ? void 0 : y.avatar) || delete e.full.pet,
+                    (null === (b = e.full.pet) || void 0 === b ? void 0 : b.avatar) || delete e.full.pet,
                     this.initPlayers(),
-                    this.setupSelfPlayerListeners(this.selfPlayer, S),
+                    this.setupSelfPlayerListeners(this.selfPlayer, R),
                     this.scene.initSelfPlayerState(e),
                     o.ZP.emitEventNow(o.fb.ROOM_LOADED, {
                         player: e,
@@ -13076,7 +13188,8 @@ localStorage.setItem('mapIDS','');
                         ownerAddress: this.room.state.ownerAddress,
                         sessionId: this.room.sessionId,
                         messages: A(this.room.state.chatMessages),
-                        templateName: this.room.state.templateName
+                        templateName: this.room.state.templateName,
+                        limits: A(this.room.state.limits)
                     }),
                     o.ZP.emitEventNow(o.fb.ROOM_NAME_CHANGED, this.room.state.name),
                     o.ZP.emitEventNow(o.fb.PLAYER_ENERGY_CHANGE, {
@@ -13212,6 +13325,12 @@ localStorage.setItem('mapIDS','');
                     inventory: A(this.selfPlayer.inventory)
                 })
             }
+            membersChanged() {
+                if (this.room) {
+                    let e = A(this.room.state.members);
+                    o.ZP.emitEventNow(o.fb.ROOM_MEMBERS_CHANGED, e)
+                }
+            }
             wardrobeChanged() {
                 this.updatedWardrobe && (this.updatedWardrobe = !1,
                 this.selfPlayer && o.rV.wardrobe.serverStateChange.emit({
@@ -13222,6 +13341,12 @@ localStorage.setItem('mapIDS','');
                 this.updatedInventory = !0,
                 e.onChange( () => {
                     this.updatedInventory = !0
+                }
+                )
+            }
+            monitorMember(e) {
+                e.onChange( () => {
+                    this.updatedMembers = !0
                 }
                 )
             }
@@ -13504,148 +13629,157 @@ localStorage.setItem('mapIDS','');
                 this.addedMapEntities = new Map,
                 this.updatedPet = !1,
                 this.updatedInventory = !1,
+                this.updatedMembers = !1,
                 this.updatedWardrobe = !1,
                 this.checkParams()
             }
         }
-        R.unwantedFarmNumbers = [0],
-        R.permanentErrors = ["room-is-full", "invalid-token", "could-not-authenticate", "player-not-found", "invalid-permissions", "bad-recaptca", "bad-telemetry-data", "invalid-map", "invalid-client-version", "player-is-banned", "authentication-expired", "invalid-world", "server-maintenance", "transfer-in-progress", "teleport-unauthorized", "join-in-progress"],
-        R.retryErrors = ["user-logging-out", "velocity-control"]
+        T.unwantedFarmNumbers = [0],
+        T.permanentErrors = ["room-is-full", "invalid-token", "could-not-authenticate", "player-not-found", "invalid-permissions", "bad-recaptca", "bad-telemetry-data", "invalid-map", "invalid-client-version", "player-is-banned", "authentication-expired", "invalid-world", "server-maintenance", "transfer-in-progress", "teleport-unauthorized", "join-in-progress"],
+        T.retryErrors = ["user-logging-out", "velocity-control"]
     },
-    75268: function(e, t, n) {
+    34923: function(e, t, n) {
         "use strict";
         n.d(t, {
             A$: function() {
-                return m
+                return v
             },
             BA: function() {
-                return _
+                return w
             },
             B_: function() {
-                return h
+                return p
             },
             D9: function() {
-                return y
+                return b
             },
             DY: function() {
-                return f
+                return h
             },
             Kp: function() {
-                return A
+                return S
             },
             LI: function() {
-                return u
+                return c
             },
             Oe: function() {
-                return T
+                return x
             },
             Qc: function() {
-                return E
+                return _
             },
             UM: function() {
-                return l
+                return u
             },
             WS: function() {
-                return w
+                return O
             },
             WX: function() {
                 return r
             },
             XX: function() {
-                return b
+                return E
             },
             Y: function() {
-                return S
-            },
-            Z6: function() {
-                return I
-            },
-            aU: function() {
-                return d
-            },
-            dW: function() {
-                return s
-            },
-            fX: function() {
-                return R
-            },
-            fd: function() {
-                return C
-            },
-            ft: function() {
-                return a
-            },
-            je: function() {
-                return k
-            },
-            ji: function() {
-                return p
-            },
-            m6: function() {
-                return O
-            },
-            p$: function() {
                 return P
             },
-            pZ: function() {
-                return x
+            Z6: function() {
+                return R
             },
-            qO: function() {
-                return o
+            aU: function() {
+                return f
             },
-            rq: function() {
+            dW: function() {
+                return l
+            },
+            fX: function() {
+                return T
+            },
+            fd: function() {
+                return L
+            },
+            ft: function() {
+                return s
+            },
+            je: function() {
+                return C
+            },
+            ji: function() {
                 return g
             },
+            lB: function() {
+                return o
+            },
+            lN: function() {
+                return N
+            },
+            m6: function() {
+                return A
+            },
+            p$: function() {
+                return I
+            },
+            pZ: function() {
+                return k
+            },
+            qO: function() {
+                return a
+            },
+            rq: function() {
+                return m
+            },
             sD: function() {
-                return v
+                return y
             },
             sV: function() {
                 return i
             },
             uT: function() {
-                return c
+                return d
             }
         });
-        let r = parseFloat("10.2103")
+        let r = parseFloat("10.213")
           , i = 1676498533e3
-          , o = "game-container"
-          , a = "players"
-          , s = "players_v2"
-          , l = s
-          , u = 144
-          , c = 188
-          , d = 1
-          , f = 2
-          , h = 3e3
-          , p = 1250
-          , g = 2e3
-          , m = 1
-          , v = 30
-          , y = 32
-          , b = 21
-          , E = 120
-          , _ = {
+          , o = 6
+          , a = "game-container"
+          , s = "players"
+          , l = "players_v2"
+          , u = l
+          , c = 144
+          , d = 188
+          , f = 1
+          , h = 2
+          , p = 3e3
+          , g = 1250
+          , m = 2e3
+          , v = 1
+          , y = 30
+          , b = 32
+          , E = 21
+          , _ = 120
+          , w = {
             top: 0,
             left: 0,
             right: 6e3,
             bottom: 6e3
         }
-          , w = {
-            width: _.right - _.left,
-            height: _.bottom - _.top
+          , O = {
+            width: w.right - w.left,
+            height: w.bottom - w.top
         }
-          , O = 2
-          , A = .05
-          , S = 100
-          , P = .4
-          , I = 2
-          , R = .03
-          , T = ["https://pixels.xyz", "https://pixels.online", "https://help.pixels.xyz"]
-          , x = "https://d31ss916pli4td.cloudfront.net"
-          , k = "https://mesh-online-assets.s3.us-east-2.amazonaws.com"
-          , C = "".concat(x, "/game/ui/skills/skills_icon_")
+          , A = 2
+          , S = .05
+          , P = 100
+          , I = .4
+          , R = 2
+          , T = .03
+          , x = ["https://pixels.xyz", "https://pixels.online", "https://help.pixels.xyz"]
+          , k = "https://d31ss916pli4td.cloudfront.net"
+          , C = "https://mesh-online-assets.s3.us-east-2.amazonaws.com"
+          , N = "cdn:"
+          , L = "".concat(k, "/game/ui/skills/skills_icon_")
     },
-    80919: function(e, t, n) {
+    34257: function(e, t, n) {
         "use strict";
         n.d(t, {
             Vh: function() {
@@ -13676,7 +13810,7 @@ localStorage.setItem('mapIDS','');
                 return m
             }
         });
-        var r, i, o, a, s, l, u, c = n(29409);
+        var r, i, o, a, s, l, u, c = n(25115);
         (a || (a = {})).RESIZE = "RESIZE",
         (r = s || (s = {})).INIT_GAME = "INIT_GAME",
         r.GAME_INITIATED = "GAME_INITIATED",
@@ -13729,6 +13863,7 @@ localStorage.setItem('mapIDS','');
         r.ROOM_LEVEL_CHANGED = "ROOM_LEVEL_CHANGED",
         r.ROOM_LABELS_CHANGED = "ROOM_LABELS_CHANGED",
         r.ROOM_LEVEL_ADD = "ROOM_LEVEL_ADD",
+        r.ROOM_LIMITS_CHANGED = "ROOM_LIMITS_CHANGED",
         r.PLAYER_ACHIEVEMENT_ADD = "PLAYER_ACHIEVEMENT_ADD",
         r.PLAYER_ACHIEVEMENT_CHANGED = "PLAYER_ACHIEVEMENT_CHANGED",
         r.PLAYER_ACHIEVEMENT_REMOVED = "PLAYER_ACHIEVEMENT_REMOVED",
@@ -13910,7 +14045,19 @@ localStorage.setItem('mapIDS','');
         }
         var b = f
     },
-    83742: function(e, t, n) {
+    38048: function(e, t, n) {
+        "use strict";
+        function r(e, t) {
+            var n;
+            return ((null == t ? void 0 : t.numComplete) || ((null === (n = e.craftable) || void 0 === n ? void 0 : n.autoGrant) ? 1 : 0)) - ((null == t ? void 0 : t.numUsed) || 0)
+        }
+        n.d(t, {
+            U: function() {
+                return r
+            }
+        })
+    },
+    71313: function(e, t, n) {
         "use strict";
         n.d(t, {
             $$: function() {
@@ -13936,8 +14083,8 @@ localStorage.setItem('mapIDS','');
             }
         });
         var r = n(25904)
-          , i = n(53059)
-          , o = n(75268);
+          , i = n(64798)
+          , o = n(34923);
         function a(e) {
             return e === o.ft ? u(e) : f(e)
         }
@@ -14111,7 +14258,7 @@ localStorage.setItem('mapIDS','');
             } : e
         }
     },
-    96808: function(e, t, n) {
+    61778: function(e, t, n) {
         "use strict";
         n.d(t, {
             ML: function() {
@@ -14132,10 +14279,10 @@ localStorage.setItem('mapIDS','');
         });
         var r = n(96486)
           , i = n.n(r)
-          , o = n(53059)
-          , a = n(73913)
+          , o = n(64798)
+          , a = n(48085)
           , s = n(36609)
-          , l = n(16497)
+          , l = n(70069)
           , u = n(25904);
         function c(e, t) {
             var n, r, i;
@@ -14233,15 +14380,15 @@ localStorage.setItem('mapIDS','');
             }
         }
         function p(e, t, n, r) {
-            var s;
+            var s, l;
             if ("string" == typeof e) {
                 let t = o.Z.getGameItem(e);
                 if (!t)
                     return !1;
                 e = t
             }
-            let l = null == e ? void 0 : e.useTargets;
-            return !!(l && (null === (s = e.onUse) || void 0 === s ? void 0 : s.types.every(e => {
+            let c = null == e ? void 0 : e.useTargets;
+            return !!(c && (null === (l = e.onUse) || void 0 === l ? void 0 : null === (s = l.types) || void 0 === s ? void 0 : s.every(e => {
                 var i, s;
                 switch (e) {
                 case "removeEntity":
@@ -14269,27 +14416,27 @@ localStorage.setItem('mapIDS','');
                 }
                 return !0
             }
-            ))) && (null == l ? void 0 : l.types.some(e => {
-                var r, a, s, u;
+            ))) && (null == c ? void 0 : c.types.some(e => {
+                var r, a, s, l;
                 if ("entities" === e)
-                    return null === (r = l.entities) || void 0 === r ? void 0 : r.includes(t);
+                    return null === (r = c.entities) || void 0 === r ? void 0 : r.includes(t);
                 if ("entityTypes" === e)
-                    return !!n && (null === (a = l.entityTypes) || void 0 === a ? void 0 : a.includes(n));
+                    return !!n && (null === (a = c.entityTypes) || void 0 === a ? void 0 : a.includes(n));
                 if ("entityLabels" === e) {
                     let e = o.Z.getGameEntity(t);
                     if (null == e ? void 0 : e.labels)
-                        return i().isEmpty(i().xor(l.entityLabels, e.labels))
+                        return i().isEmpty(i().xor(c.entityLabels, e.labels))
                 } else if ("ground" === e)
                     return "ground" === n;
                 else if ("pet" === e)
                     return "pet" === t;
                 else if ("objects" === e)
-                    return null === (s = l.objects) || void 0 === s ? void 0 : s.includes(t);
+                    return null === (s = c.objects) || void 0 === s ? void 0 : s.includes(t);
                 else if ("objectTypes" === e) {
                     let e = o.Z.getGameObject(t);
-                    return null == e ? void 0 : null === (u = e.types) || void 0 === u ? void 0 : u.every(e => {
+                    return null == e ? void 0 : null === (l = e.types) || void 0 === l ? void 0 : l.every(e => {
                         var t;
-                        return null === (t = l.objectTypes) || void 0 === t ? void 0 : t.includes(e)
+                        return null === (t = c.objectTypes) || void 0 === t ? void 0 : t.includes(e)
                     }
                     )
                 } else if ("self" === e)
@@ -14299,17 +14446,18 @@ localStorage.setItem('mapIDS','');
             ))
         }
         function g(e, t, n) {
+            var r;
             if ("string" == typeof e) {
                 let t = o.Z.getGameItem(e);
                 if (!t)
                     return !1;
                 e = t
             }
-            return !!(e.onUse && p(e, t, n)) && (e.onUse.types.includes("removeEntity") || e.onUse.types.includes("removeObject") || e.onUse.types.includes("move"))
+            return !!((null === (r = e.onUse) || void 0 === r ? void 0 : r.types) && p(e, t, n)) && (e.onUse.types.includes("removeEntity") || e.onUse.types.includes("removeObject") || e.onUse.types.includes("move"))
         }
         t.ZP = p
     },
-    60922: function(e, t, n) {
+    6178: function(e, t, n) {
         "use strict";
         n.d(t, {
             F5: function() {
@@ -14325,7 +14473,7 @@ localStorage.setItem('mapIDS','');
                 return a
             }
         });
-        var r = n(53059);
+        var r = n(64798);
         let i = {
             id: "pixels",
             name: "pixels",
@@ -14367,9 +14515,9 @@ localStorage.setItem('mapIDS','');
             return null !== (t = null !== (e = null == a ? void 0 : a[n]) && void 0 !== e ? e : null == a ? void 0 : a.pixels) && void 0 !== t ? t : i
         }
     },
-    57295: function(e, t, n) {
+    50762: function(e, t, n) {
         "use strict";
-        var r = n(35466);
+        var r = n(58577);
         class i {
             preloadOne(e) {
                 if (this.loaded.has(e))
@@ -14419,23 +14567,26 @@ localStorage.setItem('mapIDS','');
         }
         t.Z = new i
     },
-    35466: function(e, t, n) {
+    58577: function(e, t, n) {
         "use strict";
         n.d(t, {
             Uk: function() {
-                return V
+                return F
+            },
+            A3: function() {
+                return T
             },
             iy: function() {
-                return I
+                return R
             },
             KG: function() {
-                return O
+                return A
             },
             Ky: function() {
-                return C
+                return L
             },
             Ye: function() {
-                return T
+                return k
             },
             r$: function() {
                 return v
@@ -14444,73 +14595,76 @@ localStorage.setItem('mapIDS','');
                 return f
             },
             zB: function() {
-                return D
+                return U
             },
             Ir: function() {
                 return u
             },
             FL: function() {
-                return j
+                return $
             },
             TP: function() {
                 return h
             },
             aR: function() {
-                return A
+                return S
             },
             xG: function() {
-                return E
+                return _
             },
             zV: function() {
-                return _
+                return w
             },
             p6: function() {
                 return b
+            },
+            o0: function() {
+                return E
             },
             uf: function() {
                 return y
             },
             _O: function() {
-                return S
+                return P
             },
             vu: function() {
-                return x
+                return C
             },
             fI: function() {
                 return c
             },
             M_: function() {
-                return q
+                return Y
             },
             T1: function() {
                 return d
             },
             ZB: function() {
-                return U
+                return V
             },
             Ul: function() {
                 return m
             },
             r5: function() {
-                return F
+                return G
             },
             Sj: function() {
-                return w
+                return O
             },
             DJ: function() {
-                return P
+                return I
             },
             pt: function() {
-                return R
+                return x
             },
             En: function() {
-                return B
+                return q
             },
             b7: function() {
-                return $
+                return B
             }
         });
-        var r, i, o = n(14411), a = n(75268);
+        var r, i, o = n(63187), a = n(34923);
         function s(e) {
             for (var t = 1; t < arguments.length; t++) {
                 var n = arguments[t];
@@ -14688,36 +14842,67 @@ localStorage.setItem('mapIDS','');
             day: "numeric",
             year: "numeric"
         }))
-          , E = (e, t) => {
+          , E = e => ("number" == typeof e && (e = new Date(e)),
+        e.toLocaleDateString(void 0, {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit"
+        }))
+          , _ = (e, t) => {
             var n, r;
             return y(e, null !== (r = null == t ? void 0 : t.roundDecimalPlaces) && void 0 !== r ? r : Math.floor(Math.log10(2 ** (null !== (n = null == t ? void 0 : t.roundBinaryPlaces) && void 0 !== n ? n : 0))))
         }
-          , _ = (e, t) => e < 1e3 ? E(e, t) : e < 1e6 ? (e / 1e3).toFixed(e < 1e4 ? 1 : 0) + "K" : e < 1e9 ? (e / 1e6).toFixed(e < 1e7 ? 1 : 0) + "M" : e < 1e12 ? (e / 1e9).toFixed(e < 1e10 ? 1 : 0) + "B" : "> 1e12"
-          , w = e => {
+          , w = (e, t) => e < 1e3 ? _(e, t) : e < 1e6 ? (e / 1e3).toFixed(e < 1e4 ? 1 : 0) + "K" : e < 1e9 ? (e / 1e6).toFixed(e < 1e7 ? 1 : 0) + "M" : e < 1e12 ? (e / 1e9).toFixed(e < 1e10 ? 1 : 0) + "B" : "> 1e12"
+          , O = e => {
             var t;
             return (null == e ? void 0 : e.roundDecimalPlaces) ? null == e ? void 0 : e.roundDecimalPlaces : Math.floor(Math.log10(2 ** (null !== (t = null == e ? void 0 : e.roundBinaryPlaces) && void 0 !== t ? t : 0)))
-        }
-          , O = (e, t) => {
-            var n;
-            let r = (null == t ? void 0 : t.roundDecimalPlaces) ? 10 ** t.roundDecimalPlaces : 2 ** (null !== (n = null == t ? void 0 : t.roundBinaryPlaces) && void 0 !== n ? n : 0);
-            return Math.ceil(e * r) / r
         }
           , A = (e, t) => {
             var n;
             let r = (null == t ? void 0 : t.roundDecimalPlaces) ? 10 ** t.roundDecimalPlaces : 2 ** (null !== (n = null == t ? void 0 : t.roundBinaryPlaces) && void 0 !== n ? n : 0);
+            return Math.ceil(e * r) / r
+        }
+          , S = (e, t) => {
+            var n;
+            let r = (null == t ? void 0 : t.roundDecimalPlaces) ? 10 ** t.roundDecimalPlaces : 2 ** (null !== (n = null == t ? void 0 : t.roundBinaryPlaces) && void 0 !== n ? n : 0);
             return Math.floor(e * r) / r
         }
-          , S = (e, t) => Math.atan2(t.y - e.y, t.x - e.x)
-          , P = (e, t) => (t.x - e.x) ** 2 + (t.y - e.y) ** 2
-          , I = e => {
+          , P = (e, t) => Math.atan2(t.y - e.y, t.x - e.x)
+          , I = (e, t) => (t.x - e.x) ** 2 + (t.y - e.y) ** 2
+          , R = e => {
             let {selfPlayer: t, world: n, object: r, useType: i} = e;
             return t ? "self" === i || "pet" === i ? 0 : r ? Math.max(0, Math.abs(t.y - r.adjusted.y - r.height / 2) - r.height / 2) ** 2 + Math.max(0, Math.abs(t.x - r.adjusted.x - r.width / 2) - r.width / 2) ** 2 : (t.y - n.y) * (t.y - n.y) + (t.x - n.x) * (t.x - n.x) : 1e4
         }
-          , R = e => window.fetch(e, {
+          , T = (e, t) => {
+            let {selfPlayer: n, world: r, object: i, useType: o} = e;
+            if (n && "self" !== o && "pet" !== o) {
+                if (i) {
+                    let e = i.adjusted.x + i.width / 2 - n.x
+                      , r = i.adjusted.y + i.height / 2 - n.y;
+                    return Math.abs(e) < i.width / 2 && (e = 0),
+                    Math.abs(r) < i.height / 2 && (r = 0),
+                    {
+                        x: n.x + e * t,
+                        y: n.y + r * t
+                    }
+                }
+                {
+                    let e = r.x
+                      , i = r.y;
+                    return {
+                        x: n.x + (e - n.x) * t,
+                        y: n.y + (i - n.y) * t
+                    }
+                }
+            }
+        }
+          , x = e => window.fetch(e, {
             mode: "cors",
             credentials: "omit"
         })
-          , T = async () => {
+          , k = async () => {
             try {
                 return {
                     version: await window.fetch("/version.json").then(e => e.json())
@@ -14730,7 +14915,7 @@ localStorage.setItem('mapIDS','');
             }
         }
         ;
-        function x() {
+        function C() {
             let e = navigator.userAgent.match(/Chrom(?:e|ium)\/([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/);
             if (null == e || 5 != e.length)
                 return;
@@ -14744,44 +14929,43 @@ localStorage.setItem('mapIDS','');
                 mobile: n
             }
         }
-        let k = {}
-          , C = async e => {
+        let N = {}
+          , L = async e => {
             try {
-                if (k[e])
-                    return k[e];
+                if (N[e])
+                    return N[e];
                 let t = encodeURIComponent(e)
                   , n = await window.fetch("".concat(o.LB, "/v1/expand?url=").concat(t)).then(e => e.json());
                 if (null == n ? void 0 : n.url)
-                    return k[e] = n.url,
+                    return N[e] = n.url,
                     n.url
             } catch (e) {
                 console.error("error looking up redirect", e)
             }
             return e
         }
-          , N = /fuck|shit|cunt|cock|fcuk|nigger|5hit/i
-          , L = /\b(4r5e|5h1t|5hit|a55|hitler|anal|anus|ar5e|arrse|arse|ass|asshole|asswhole|a_s_s|b!tch|b00bs|b17ch|b1tch|ballbag|balls|ballsack|bastard|beastial|beastiality|bellend|bestial|bestiality|bi\+ch|biatch|bitch|bitcher|bitchers|bitches|bitchin|bitching|bloody|blow job|blowjob|boiolas|bollock|bollok|boner|boob|booob|boooob|booooob|booooooob|breasts|buceta|bugger|bum|butthole|buttmunch|buttplug|c0ck|c0cksucker|carpet muncher|cawk|chink|cipa|cl1t|clit|clitoris|cnut|cock|cok|coon|cox|crap|cum|cummer|cumming|cums|cumshot|cunilingus|cunillingus|cunnilingus|cunt|cyalis|cyberfuc|d1ck|damn|dick|dickhead|dildo|dink|dinks|dirsa|dlck|doggin|dogging|donkeyribber|doosh|duche|dyke|ejaculat|ejakulate|f u c k|f u c k e r|f4nny|fag|fanny|fannyflaps|fanyy|fatass|fcuk|fcuker|fcuking|feck|fecker|felching|fellate|fellatio|flange|fook|fooker|fudge packer|fudgepacker|fuk|fuker|fukker|fukkin|fuks|fukwhit|fukwit|fux|fux0r|f_u_c_k|gangbang|gangbanged|gangbangs|gaylord|gaysex|goatse|God|god-dam|god-damned|goddamn|goddamned|hardcoresex|heshe|hoare|hoer|homo|hore|horniest|horny|hotsex|jack-off|jackoff|jap|jerk-off|jism|jiz|jizm|jizz|kawk|knob|knobead|knobed|knobend|knobhead|knobjocky|knobjokey|kock|kondum|kondums|kum|kummer|kumming|kums|kunilingus|l3i\+ch|l3itch|labia|lust|lusting|m0f0|m0fo|m45terbate|ma5terb8|ma5terbate|masochist|master-bate|masterb8|masterbat*|masterbat3|masterbat|masturbate|mo-fo|mof0|mofo|mothafuck|mother fuck|motherfuck|muff|mutha|muthafeck|muthafuckk|muther|n1gga|n1gger|nazi|nigg3r|nigg4h|nigga|niggah|niggas|niggaz|nigger|niggers|nob|nob jokey|nobhead|nobjocky|nobjokey|numbnuts|nutsack|orgasim|orgasims|orgasm|orgasms|p0rn|pawn|pecker|penis|penisfucker|phonesex|phuck|phuk|phuked|phuking|phukked|phukking|phuks|phuq|pigfucker|pimpis|piss|poop|porn|prick|pron|pube|pusse|pussi|pussy|rectum|retard|rimjaw|rimming|s hit|s.o.b.|sadist|schlong|screwing|scroat|scrote|scrotum|semen|sex|sh!\+|sh!t|sh1t|shag|shagger|shaggin|shagging|shemale|shi\+|skank|slut|sluts|smegma|smut|snatch|son-of-a-bitch|spunk|s_h_i_t|t1tt1e|teets|teez|testical|testicle|titfuck|tits|titt|titwank|tosser|turd|tw4t|twat|twathead|twatty|v14gra|v1gra|vagina|viagra|vulva|w00se|wang|wank|wanker|wanky|whoar|whore|xrated|xxx|kkk)/gi
-          , M = (null === (i = window.navigator) || void 0 === i ? void 0 : null === (r = i.languages) || void 0 === r ? void 0 : r.some(e => null == e ? void 0 : e.startsWith("tl"))) ? /fuck|shit|cunt|cock|fcuk|hitler|[-._+,;:'`#^/\\]+[A-Za-z]+[-._+,;:'`#^/\\]|putang|asshole|asswhole|gago|bastard|beastial|punyeta|ulol|tae|hayop|bi\+ch|biatch|bitch|bitcher|bitchers|bitches|lintik|pakshet|bloody|blowjob|boiolas|bollock|bollok|boo+b|bogo|breasts|buceta|bugger|butthole|buttmunch|buttplug|c0ck|c0cksucker|carpet muncher|bobo|chink|cl1t|clit|clitoris|cnut|cock|cok|cox|cummer|cumming|cumshot|cunilingus|cunillingus|cunnilingus|cunt|cyalis|cyberfuc|d1ck|dickhead|dildo|dinks|dirsa|dlck|donkeyribber|doosh|duche|dyke|ejaculat|ejakulate|f u c k|f u c k e r|f4nny|fanny|fanyy|fatass|fcuk|fcuker|fcuking|fecker|felching|fellate|fellatio|flange|fudge packer|fudgepacker|fuk|fuker|fukker|fukkin|fuks|fukwhit|fukwit|fux0r|gangbang|gangbanged|gangbangs|gaylord|gaysex|god-dam|god-damned|goddamn|goddamned|hardcoresex|hoare|horniest|horny|hotsex|jack-off|jackoff|jerk-off|jism|jizm|jizz|kawk|puta|knobed|knobend|knobhead|knobjocky|knobjokey|kondum|kondums|kummer|kumming|kunilingus|l3i\+ch|l3itch|labia|m0f0|m0fo|m45terbate|ma5terb8|ma5terbate|masochist|master-bate|masterb8|masterbat|mo-fo|mof0|mothafuck|mother fucker|motherfuck|muthafeck|muthafuck|n1gga|n1gger|nazi|nigg3r|nigg4h|nigga|niggah|niggas|niggaz|nigger|niggers|numbnuts|nutsack|orgasim|orgasims|orgasm|orgasms|p0rn|penis|penisfucker|phonesex|phuck|phuked|phuking|phukked|phukking|phuks|pigfucker|pimpis|pissflaps|pissin|pissing|pissoff|porno|pricks|pube|pusse|pussi|pussy|rectum|retard|rimjaw|schlong|scrote|scrotum|shagger|shaggin|shagging|shemale|skank|smegma|snatch|spunk|t1tt1e5|t1tties|teez|testical|testicle|titfuck|titties|tittyfuck|tittywank|titwank|tw4t|twat|twathead|twatty|twunt|twunter|tranny|trannie|vagina|viagra|vulva|wang|wank|wanker|wanky|whoar|whore|xxx/gi : /fuck|shit|cunt|cock|fcuk|hitler|[-._+,;:'`#^/\\]+[A-Za-z]+[-._+,;:'`#^/\\]|arrse|asshole|asswhole|ballbag|bastard|beastial|beastiality|bellend|bestiality|bi\+ch|biatch|bloody|blowjob|boiolas|bollock|bollok|boo+b|breasts|buceta|bugger|butthole|buttmunch|buttplug|c0ck|c0cksucker|carpet muncher|cawk|chink|cl1t|clit|clitoris|cnut|cock|cok|cox|cummer|cumming|cumshot|cunilingus|cunillingus|cunnilingus|cunt|cyalis|cyberfuc|d1ck|dickhead|dildo|dinks|dirsa|dlck|donkeyribber|doosh|duche|dyke|ejaculat|ejakulate|f u c k|f u c k e r|f4nny|fanny|fanyy|fatass|fcuk|fcuker|fcuking|fecker|felching|fellate|fellatio|flange|fudge packer|fudgepacker|fuk|fuker|fukker|fukkin|fuks|fukwhit|fukwit|fux0r|gangbang|gangbanged|gangbangs|gaylord|gaysex|god-dam|god-damned|goddamn|goddamned|hardcoresex|hoare|horniest|horny|hotsex|jack-off|jackoff|jerk-off|jism|jizm|jizz|kawk|knobead|knobed|knobend|knobhead|knobjocky|knobjokey|kondum|kondums|kummer|kumming|kunilingus|l3i\+ch|l3itch|labia|m0f0|m0fo|m45terbate|ma5terb8|ma5terbate|masochist|master-bate|masterb8|masterbat*|masterbat|mo-fo|mof0|mothafuck|mother fuck|motherfuck|muthafecker|muthafuck|n1gga|n1gger|nazi|nigg3r|nigg4h|nigga|niggah|niggas|niggaz|nigger|niggers|numbnuts|nutsack|orgasim|orgasims|orgasm|orgasms|p0rn|penis|penisfucker|phonesex|phuck|phuked|phuking|phukked|phukking|phuks|pigfucker|pimpis|pissflaps|pissin|pissing|pissoff|porno|pornography|pornos|pricks|pube|pusse|pussi|pussy|rectum|retard|rimjaw|schlong|scrote|scrotum|shagger|shaggin|shagging|shemale|skank|smegma|snatch|spunk|t1tt1e5|t1tties|teez|testical|testicle|titfuck|titties|tittyfuck|tittywank|titwank|tw4t|twat|twathead|twatty|twunt|twunter|tranny|trannie|vagina|viagra|vulva|wang|wank|wanker|wanky|whoar|whore|xxx/gi
-          , D = e => (L.lastIndex = 0,
+          , M = /fuck|shit|cunt|cock|fcuk|nigger|5hit/i
+          , D = /\b(4r5e|5h1t|5hit|a55|hitler|anal|anus|ar5e|arrse|arse|ass|asshole|asswhole|a_s_s|b!tch|b00bs|b17ch|b1tch|ballbag|balls|ballsack|bastard|beastial|beastiality|bellend|bestial|bestiality|bi\+ch|biatch|bitch|bitcher|bitchers|bitches|bitchin|bitching|bloody|blow job|blowjob|boiolas|bollock|bollok|boner|boob|booob|boooob|booooob|booooooob|breasts|buceta|bugger|bum|butthole|buttmunch|buttplug|c0ck|c0cksucker|carpet muncher|cawk|chink|cipa|cl1t|clit|clitoris|cnut|cock|cok|coon|cox|crap|cum|cummer|cumming|cums|cumshot|cunilingus|cunillingus|cunnilingus|cunt|cyalis|cyberfuc|d1ck|damn|dick|dickhead|dildo|dink|dinks|dirsa|dlck|doggin|dogging|donkeyribber|doosh|duche|dyke|ejaculat|ejakulate|f u c k|f u c k e r|f4nny|fag|fanny|fannyflaps|fanyy|fatass|fcuk|fcuker|fcuking|feck|fecker|felching|fellate|fellatio|flange|fook|fooker|fudge packer|fudgepacker|fuk|fuker|fukker|fukkin|fuks|fukwhit|fukwit|fux|fux0r|f_u_c_k|gangbang|gangbanged|gangbangs|gaylord|gaysex|goatse|God|god-dam|god-damned|goddamn|goddamned|hardcoresex|heshe|hoare|hoer|homo|hore|horniest|horny|hotsex|jack-off|jackoff|jap|jerk-off|jism|jiz|jizm|jizz|kawk|knob|knobead|knobed|knobend|knobhead|knobjocky|knobjokey|kock|kondum|kondums|kum|kummer|kumming|kums|kunilingus|l3i\+ch|l3itch|labia|lust|lusting|m0f0|m0fo|m45terbate|ma5terb8|ma5terbate|masochist|master-bate|masterb8|masterbat*|masterbat3|masterbat|masturbate|mo-fo|mof0|mofo|mothafuck|mother fuck|motherfuck|muff|mutha|muthafeck|muthafuckk|muther|n1gga|n1gger|nazi|nigg3r|nigg4h|nigga|niggah|niggas|niggaz|nigger|niggers|nob|nob jokey|nobhead|nobjocky|nobjokey|numbnuts|nutsack|orgasim|orgasims|orgasm|orgasms|p0rn|pawn|pecker|penis|penisfucker|phonesex|phuck|phuk|phuked|phuking|phukked|phukking|phuks|phuq|pigfucker|pimpis|piss|poop|porn|prick|pron|pube|pusse|pussi|pussy|rectum|retard|rimjaw|rimming|s hit|s.o.b.|sadist|schlong|screwing|scroat|scrote|scrotum|semen|sex|sh!\+|sh!t|sh1t|shag|shagger|shaggin|shagging|shemale|shi\+|skank|slut|sluts|smegma|smut|snatch|son-of-a-bitch|spunk|s_h_i_t|t1tt1e|teets|teez|testical|testicle|titfuck|tits|titt|titwank|tosser|turd|tw4t|twat|twathead|twatty|v14gra|v1gra|vagina|viagra|vulva|w00se|wang|wank|wanker|wanky|whoar|whore|xrated|xxx|kkk)/gi
+          , j = (null === (i = window.navigator) || void 0 === i ? void 0 : null === (r = i.languages) || void 0 === r ? void 0 : r.some(e => null == e ? void 0 : e.startsWith("tl"))) ? /fuck|shit|cunt|cock|fcuk|hitler|[-._+,;:'`#^/\\]+[A-Za-z]+[-._+,;:'`#^/\\]|putang|asshole|asswhole|gago|bastard|beastial|punyeta|ulol|tae|hayop|bi\+ch|biatch|bitch|bitcher|bitchers|bitches|lintik|pakshet|bloody|blowjob|boiolas|bollock|bollok|boo+b|bogo|breasts|buceta|bugger|butthole|buttmunch|buttplug|c0ck|c0cksucker|carpet muncher|bobo|chink|cl1t|clit|clitoris|cnut|cock|cok|cox|cummer|cumming|cumshot|cunilingus|cunillingus|cunnilingus|cunt|cyalis|cyberfuc|d1ck|dickhead|dildo|dinks|dirsa|dlck|donkeyribber|doosh|duche|dyke|ejaculat|ejakulate|f u c k|f u c k e r|f4nny|fanny|fanyy|fatass|fcuk|fcuker|fcuking|fecker|felching|fellate|fellatio|flange|fudge packer|fudgepacker|fuk|fuker|fukker|fukkin|fuks|fukwhit|fukwit|fux0r|gangbang|gangbanged|gangbangs|gaylord|gaysex|god-dam|god-damned|goddamn|goddamned|hardcoresex|hoare|horniest|horny|hotsex|jack-off|jackoff|jerk-off|jism|jizm|jizz|kawk|puta|knobed|knobend|knobhead|knobjocky|knobjokey|kondum|kondums|kummer|kumming|kunilingus|l3i\+ch|l3itch|labia|m0f0|m0fo|m45terbate|ma5terb8|ma5terbate|masochist|master-bate|masterb8|masterbat|mo-fo|mof0|mothafuck|mother fucker|motherfuck|muthafeck|muthafuck|n1gga|n1gger|nazi|nigg3r|nigg4h|nigga|niggah|niggas|niggaz|nigger|niggers|numbnuts|nutsack|orgasim|orgasims|orgasm|orgasms|p0rn|penis|penisfucker|phonesex|phuck|phuked|phuking|phukked|phukking|phuks|pigfucker|pimpis|pissflaps|pissin|pissing|pissoff|porno|pricks|pube|pusse|pussi|pussy|rectum|retard|rimjaw|schlong|scrote|scrotum|shagger|shaggin|shagging|shemale|skank|smegma|snatch|spunk|t1tt1e5|t1tties|teez|testical|testicle|titfuck|titties|tittyfuck|tittywank|titwank|tw4t|twat|twathead|twatty|twunt|twunter|tranny|trannie|vagina|viagra|vulva|wang|wank|wanker|wanky|whoar|whore|xxx/gi : /fuck|shit|cunt|cock|fcuk|hitler|[-._+,;:'`#^/\\]+[A-Za-z]+[-._+,;:'`#^/\\]|arrse|asshole|asswhole|ballbag|bastard|beastial|beastiality|bellend|bestiality|bi\+ch|biatch|bloody|blowjob|boiolas|bollock|bollok|boo+b|breasts|buceta|bugger|butthole|buttmunch|buttplug|c0ck|c0cksucker|carpet muncher|cawk|chink|cl1t|clit|clitoris|cnut|cock|cok|cox|cummer|cumming|cumshot|cunilingus|cunillingus|cunnilingus|cunt|cyalis|cyberfuc|d1ck|dickhead|dildo|dinks|dirsa|dlck|donkeyribber|doosh|duche|dyke|ejaculat|ejakulate|f u c k|f u c k e r|f4nny|fanny|fanyy|fatass|fcuk|fcuker|fcuking|fecker|felching|fellate|fellatio|flange|fudge packer|fudgepacker|fuk|fuker|fukker|fukkin|fuks|fukwhit|fukwit|fux0r|gangbang|gangbanged|gangbangs|gaylord|gaysex|god-dam|god-damned|goddamn|goddamned|hardcoresex|hoare|horniest|horny|hotsex|jack-off|jackoff|jerk-off|jism|jizm|jizz|kawk|knobead|knobed|knobend|knobhead|knobjocky|knobjokey|kondum|kondums|kummer|kumming|kunilingus|l3i\+ch|l3itch|labia|m0f0|m0fo|m45terbate|ma5terb8|ma5terbate|masochist|master-bate|masterb8|masterbat*|masterbat|mo-fo|mof0|mothafuck|mother fuck|motherfuck|muthafecker|muthafuck|n1gga|n1gger|nazi|nigg3r|nigg4h|nigga|niggah|niggas|niggaz|nigger|niggers|numbnuts|nutsack|orgasim|orgasims|orgasm|orgasms|p0rn|penis|penisfucker|phonesex|phuck|phuked|phuking|phukked|phukking|phuks|pigfucker|pimpis|pissflaps|pissin|pissing|pissoff|porno|pornography|pornos|pricks|pube|pusse|pussi|pussy|rectum|retard|rimjaw|schlong|scrote|scrotum|shagger|shaggin|shagging|shemale|skank|smegma|snatch|spunk|t1tt1e5|t1tties|teez|testical|testicle|titfuck|titties|tittyfuck|tittywank|titwank|tw4t|twat|twathead|twatty|twunt|twunter|tranny|trannie|vagina|viagra|vulva|wang|wank|wanker|wanky|whoar|whore|xxx/gi
+          , U = e => (D.lastIndex = 0,
+        j.lastIndex = 0,
         M.lastIndex = 0,
-        N.lastIndex = 0,
-        N.test(e) || L.test(e) || M.test(e.replace(/[^a-zA-Z1350]/, "")))
-          , j = e => e.replaceAll(M, "@#$%").replaceAll(L, "!*^+")
-          , U = e => e.replace(/^(http|https)?:?\/\/[^/]*/, "").replace(/\?.*$/, "").replace(/-|\/|\|_|\.png|uploadedAssets/g, "")
-          , $ = function(e) {
+        M.test(e) || D.test(e) || j.test(e.replace(/[^a-zA-Z1350]/, "")))
+          , $ = e => e.replaceAll(j, "@#$%").replaceAll(D, "!*^+")
+          , V = e => e.replace(/^(http|https)?:?\/\/[^/]*/, "").replace(/\?.*$/, "").replace(/-|\/|\|_|\.png|uploadedAssets/g, "")
+          , B = function(e) {
             let t = !(arguments.length > 1) || void 0 === arguments[1] || arguments[1];
             if (!e)
                 return "";
             if (e.startsWith("blob:") || e.startsWith("data:"))
                 return e;
-            e.startsWith("ipfs:") && (e = e.replace("ipfs://", "//ipfs.io/ipfs/")),
-            e.startsWith(a.je) && (e = e.replace(a.je, a.pZ));
+            e.startsWith("ipfs:") ? e = e.replace("ipfs://", "//ipfs.io/ipfs/") : e.startsWith(a.je) ? e = e.replace(a.je, a.pZ) : e.startsWith(a.lN) && (e = e.replace(a.lN, a.pZ));
             let n = e.indexOf(":")
               , r = -1 === n ? e : e.substring(n + 1);
             return t && -1 === e.indexOf("?") && -1 === e.indexOf("#") ? "".concat(r, "?v6") : r
         }
-          , V = e => e ? e.startsWith("/assets/ui") ? e.replace("/assets/ui/", "".concat(a.pZ, "/game/ui/")) : e.startsWith("/game") ? "".concat(a.pZ).concat(e) : e.startsWith("/assets/") ? e.replace("/assets/", "".concat(a.pZ, "/game/assets/")) : e.startsWith("/") && !e.startsWith("//") ? "".concat(a.pZ).concat(e) : e : ""
-          , B = e => {
+          , F = e => e ? e.startsWith("/assets/ui") ? e.replace("/assets/ui/", "".concat(a.pZ, "/game/ui/")) : e.startsWith("/game") ? "".concat(a.pZ).concat(e) : e.startsWith("/assets/") ? e.replace("/assets/", "".concat(a.pZ, "/game/assets/")) : e.startsWith("/") && !e.startsWith("//") ? "".concat(a.pZ).concat(e) : e : ""
+          , q = e => {
             let t = (null == e ? void 0 : e.toLowerCase()) || ""
               , n = e;
             try {
@@ -14803,21 +14987,21 @@ localStorage.setItem('mapIDS','');
             }
         }
         ;
-        function F(e) {
+        function G(e) {
             let t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
             return e.startsWith("pixelsNFTFarm-") ? "".concat(e.replace("pixelsNFTFarm-", t ? "#" : "")) : /terravilla/i.test(e) ? "TV" : e
         }
-        function q(e) {
+        function Y(e) {
             let t = 1;
             for (; t < e; )
                 t *= 2;
             return t === e
         }
     },
-    97790: function(e, t, n) {
+    39219: function(e, t, n) {
         "use strict";
-        var r = n(80919)
-          , i = n(53059);
+        var r = n(34257)
+          , i = n(64798);
         class o {
             get isInitialized() {
                 return !!o.phaserGame
@@ -14834,8 +15018,8 @@ localStorage.setItem('mapIDS','');
             }
             async initGame() {
                 let e = await n.e(989).then(n.t.bind(n, 82260, 23))
-                  , t = await Promise.all([n.e(989), n.e(445)]).then(n.bind(n, 25206))
-                  , {phaserConfig: i} = await Promise.all([n.e(989), n.e(347)]).then(n.bind(n, 37347));
+                  , t = await Promise.all([n.e(989), n.e(521)]).then(n.bind(n, 6521))
+                  , {phaserConfig: i} = await Promise.all([n.e(989), n.e(269)]).then(n.bind(n, 65269));
                 return await r.ZP.init(),
                 o.phaserGame || (this.audioScene = new t.default,
                 i.scene = this.audioScene,
@@ -14885,7 +15069,7 @@ localStorage.setItem('mapIDS','');
                 var t;
                 o.phaserGame || await this.initGame(),
                 null === (t = this.audioScene) || void 0 === t || t.clearPositional();
-                let i = await Promise.all([n.e(989), n.e(640), n.e(445), n.e(586)]).then(n.bind(n, 20586));
+                let i = await Promise.all([n.e(989), n.e(676), n.e(521), n.e(92)]).then(n.bind(n, 27092));
                 if (o.reentrancyCheck) {
                     console.error("wtf are we doing? We cannot run this twice.");
                     return
@@ -14942,13 +15126,13 @@ localStorage.setItem('mapIDS','');
         }
         t.Z = new o
     },
-    18062: function(e, t, n) {
+    65724: function(e, t, n) {
         "use strict";
         var r = n(87066)
-          , i = n(75268)
-          , o = n(60922)
-          , a = n(35466)
-          , s = n(14411);
+          , i = n(34923)
+          , o = n(6178)
+          , a = n(58577)
+          , s = n(63187);
         class l {
             async logAction(e) {
                 r.Z.get("".concat(this.baseAPIURL, "/log?message=") + encodeURIComponent(e))
@@ -15185,7 +15369,8 @@ localStorage.setItem('mapIDS','');
                 return this.limiter = (async () => {
                     var n;
                     let i = 1e3 - (Date.now() - (null !== (n = this.lastcall) && void 0 !== n ? n : 0));
-                    i > 0 && await new Promise(e => setTimeout(e, i));
+                    i > 0 && (console.log("waiting to make api call ".concat(i)),
+                    await new Promise(e => setTimeout(e, i)));
                     let {data: o} = await r.Z.get(t, e);
                     return this.lastcall = Date.now(),
                     o
@@ -15269,6 +15454,12 @@ localStorage.setItem('mapIDS','');
                 let {data: t} = await this.axiosget("".concat(this.baseAPIURL, "/map/").concat(e));
                 return t
             }
+            async fetchAnnouncements() {
+                let {data: e} = await this.axiosget("".concat(this.baseAPIURL, "/news?tenant=").concat((0,
+                o.F5)()));
+                if ("function" == typeof (null == e ? void 0 : e.filter))
+                    return e
+            }
             async fetchingUgcDecorations(e) {
                 let {onlyFetchPending: t} = e
                   , n = (0,
@@ -15288,7 +15479,7 @@ localStorage.setItem('mapIDS','');
                     headers: {
                         ...null == t ? void 0 : t.headers,
                         "X-Client-Password": (0,
-                        a.Ul)("client_password")
+                        a.Ul)("client_password") || void 0
                     }
                 };
                 try {
@@ -15332,9 +15523,8 @@ localStorage.setItem('mapIDS','');
                 })
             }
             async timeSync() {
-                let e = Date.now();
-                console.log("url: ".concat(this.baseAPIURL, "/sync/").concat(e));
-                let {data: t} = await r.Z.get("".concat(this.baseAPIURL, "/sync/").concat(e));
+                let e = Date.now()
+                  , {data: t} = await r.Z.get("".concat(this.baseAPIURL, "/sync/").concat(e));
                 if (!t)
                     return 0;
                 let n = Date.now();
@@ -15426,8 +15616,20 @@ localStorage.setItem('mapIDS','');
                 let {data: e} = await this.axiosget("".concat(this.baseAPIURL, "/game/worlds"));
                 return e
             }
+            async fetchCreatorCodeData(e) {
+                let {data: t} = await this.axiosget("".concat(this.baseAPIURL, "/creator_code/check?code=").concat(e), {
+                    headers: {
+                        Authorization: this.sessionToken
+                    }
+                });
+                return t
+            }
             async fetchGachaPreview(e) {
-                let {data: t} = await this.axiosget("".concat(this.baseAPIURL, "/gacha/preview/").concat(e));
+                let {data: t} = await this.axiosget("".concat(this.baseAPIURL, "/gacha/preview/").concat(e), {
+                    headers: {
+                        Authorization: this.sessionToken
+                    }
+                });
                 return t
             }
             async fetchMarketplaceListingCounts() {
@@ -15487,9 +15689,9 @@ localStorage.setItem('mapIDS','');
         }
         t.Z = new l(s.LB,"v1")
     },
-    85469: function(e, t, n) {
+    64417: function(e, t, n) {
         "use strict";
-        var r = n(18062);
+        var r = n(65724);
         class i {
             get sessionToken() {
                 return this.api.sessionToken
@@ -15540,14 +15742,14 @@ localStorage.setItem('mapIDS','');
         }
         t.Z = new i(r.Z)
     },
-    4602: function(e, t, n) {
+    74977: function(e, t, n) {
         "use strict";
         n.d(t, {
             Z: function() {
-                return K
+                return J
             },
             W: function() {
-                return W
+                return K
             }
         });
         var r, i, o, a, s, l = n(36609), u = n(67421);
@@ -16217,8 +16419,9 @@ localStorage.setItem('mapIDS','');
             }
         }
         Z.type = "languageDetector";
-        var z = n(60922);
-        let H = !1;
+        var z = n(6178);
+        let H = !1
+          , W = Date.now();
         l.ZP.on("onLoaded", () => {
             console.log("loading i18n"),
             H = !0
@@ -16249,21 +16452,23 @@ localStorage.setItem('mapIDS','');
             H = !e
         }
         );
-        let W = function() {
-            let e = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];
-            if (e || !H)
-                return l.ZP.reloadResources()
+        let K = function() {
+            let e = arguments.length > 0 && void 0 !== arguments[0] && arguments[0]
+              , t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0;
+            if (e || !H || t > W)
+                return W = Date.now(),
+                l.ZP.reloadResources()
         };
-        var K = l.ZP
+        var J = l.ZP
     },
-    53059: function(e, t, n) {
+    64798: function(e, t, n) {
         "use strict";
         n.d(t, {
             Z: function() {
-                return s
+                return u
             }
         });
-        var r = n(18062);
+        var r = n(65724);
         function i(e) {
             let {keyField: t, first: n, second: r, mergefields: i} = e
               , o = [].concat(null != n ? n : []);
@@ -16324,7 +16529,9 @@ localStorage.setItem('mapIDS','');
             u
         }
         ;
-        class a {
+        var a = n(25904)
+          , s = n(77182);
+        class l {
             async loadMap(e) {
                 return this.api.fetchMap(e)
             }
@@ -16335,7 +16542,8 @@ localStorage.setItem('mapIDS','');
             }
             async loadLibraries(e) {
                 try {
-                    this.gameLibraryPromise || (this.gameLibraryPromise = this.api.fetchGameLibrary(),
+                    this.gameLibraryPromise || (this.gameLibraryLoadTime = Date.now(),
+                    this.gameLibraryPromise = this.api.fetchGameLibrary(),
                     this.gameLibraryPromise.then(e => {
                         this.gameLibrary = this.transformGameLibrary(e)
                     }
@@ -16394,7 +16602,27 @@ localStorage.setItem('mapIDS','');
                     o(t, e)
                 }
                 ),
+                e.tilesets && Object.values(e.tilesets).forEach(e => {
+                    var t;
+                    !e.indexes && (null === (t = e.flags) || void 0 === t ? void 0 : t.length) && (e.indexes = (0,
+                    s.YN)(e.flags),
+                    delete e.flags)
+                }
+                ),
                 e
+            }
+            async reloadLibrary(e) {
+                if (!((null != e ? e : 0) <= this.gameLibraryLoadTime))
+                    try {
+                        this.gameLibraryLoadTime = Date.now();
+                        let e = await this.api.fetchGameLibrary()
+                          , t = this.transformGameLibrary(e);
+                        return this.updateGameLibrary(t),
+                        this.gameLibrary
+                    } catch (e) {
+                        console.log("could not load game library", e);
+                        return
+                    }
             }
             transformGameLibraryUpdate(e) {
                 let t = {
@@ -16407,6 +16635,13 @@ localStorage.setItem('mapIDS','');
                         t[n][e.id] = e
                     }
                     ))
+                }
+                ),
+                t.tilesets && Object.values(t.tilesets).forEach(e => {
+                    var t;
+                    !e.indexes && (null === (t = e.flags) || void 0 === t ? void 0 : t.length) && (e.indexes = (0,
+                    s.YN)(e.flags),
+                    delete e.flags)
                 }
                 ),
                 t
@@ -16573,60 +16808,102 @@ localStorage.setItem('mapIDS','');
             }
             async updateLibraryItems(e) {
                 var t;
-                if (this.gameLibrary && (null === (t = this.mapLibrary) || void 0 === t ? void 0 : t.config) && (null == e ? void 0 : e.length))
-                    try {
-                        let t = await this.api.fetchGameLibraryExtras({
-                            items: e
-                        });
-                        this.updateGameLibrary(this.transformGameLibraryUpdate(t))
-                    } catch (e) {
-                        console.error("failure getting supplemental objects")
-                    }
+                if (!this.gameLibrary || !(null === (t = this.mapLibrary) || void 0 === t ? void 0 : t.config) || !(null == e ? void 0 : e.length))
+                    return !1;
+                try {
+                    let t = await this.api.fetchGameLibraryExtras({
+                        items: e
+                    });
+                    this.updateGameLibrary(this.transformGameLibraryUpdate(t))
+                } catch (e) {
+                    console.error("failure getting supplemental objects")
+                }
             }
-            async scanGameLibrary(e) {
-                var t;
-                if (!this.gameLibrary || !(null === (t = this.mapLibrary) || void 0 === t ? void 0 : t.config))
+            async updateStorageItems(e) {
+                if (!this.gameLibrary || !(null == e ? void 0 : e.slots))
+                    return !1;
+                let t = {
+                    items: new Set
+                };
+                (0,
+                a.be)(e.slots, e => {
+                    (null == e ? void 0 : e.item) && (!this.gameLibrary.items || !Object.hasOwn(this.gameLibrary.items, e.item)) && t.items.add(e.item)
+                }
+                );
+                let n = !0
+                  , r = {};
+                if (Object.entries(t).filter(e => {
+                    let[,t] = e;
+                    return t.size > 0
+                }
+                ).forEach(e => {
+                    let[t,i] = e;
+                    n = !1,
+                    r[t] = Array.from(i)
+                }
+                ),
+                n)
+                    return !1;
+                console.log("waiting to retrieve missing items", r);
+                try {
+                    let e = await this.api.fetchGameLibraryExtras(r);
+                    return this.updateGameLibrary(this.transformGameLibraryUpdate(e)),
+                    !0
+                } catch (e) {
+                    return console.error("failure getting supplemental objects"),
+                    !1
+                }
+            }
+            async scanGameLibrary(e, t) {
+                var n;
+                if (!this.gameLibrary || !(null === (n = this.mapLibrary) || void 0 === n ? void 0 : n.config))
                     return;
-                let n = {
+                let r = {
                     objects: new Set,
                     entities: new Set,
                     tilesets: new Set,
+                    items: new Set,
                     sounds: new Set
                 };
                 this.mapLibrary.config.objects && Object.entries(this.mapLibrary.config.objects).forEach(e => {
                     let[,t] = e;
-                    this.gameLibrary.objects && Object.hasOwn(this.gameLibrary.objects, t.object) || n.objects.add(t.object)
+                    this.gameLibrary.objects && Object.hasOwn(this.gameLibrary.objects, t.object) || r.objects.add(t.object)
                 }
                 ),
                 this.mapLibrary.config.tiles && Object.entries(this.mapLibrary.config.tiles).forEach(e => {
                     let[,t] = e;
-                    this.gameLibrary.tilesets && Object.hasOwn(this.gameLibrary.tilesets, t.tileset) || n.tilesets.add(t.tileset)
+                    this.gameLibrary.tilesets && Object.hasOwn(this.gameLibrary.tilesets, t.tileset) || r.tilesets.add(t.tileset)
                 }
                 ),
                 this.mapLibrary.config.sounds && this.mapLibrary.config.sounds.forEach(e => {
-                    this.gameLibrary.sounds && this.gameLibrary.sounds.has(e) || n.sounds.add(e)
+                    this.gameLibrary.sounds && this.gameLibrary.sounds.has(e) || r.sounds.add(e)
                 }
                 ),
-                e.forEach(e => {
-                    this.gameLibrary.entities && Object.hasOwn(this.gameLibrary.entities, e.entity) || n.entities.add(e.entity)
+                null == e || e.forEach(e => {
+                    this.gameLibrary.entities && Object.hasOwn(this.gameLibrary.entities, e.entity) || r.entities.add(e.entity)
+                }
+                ),
+                (0,
+                a.be)(null == t ? void 0 : t.slots, e => {
+                    (null == e ? void 0 : e.item) && (!this.gameLibrary.items || !Object.hasOwn(this.gameLibrary.items, e.item)) && r.items.add(e.item)
                 }
                 );
-                let r = !0
-                  , i = {};
-                if (Object.entries(n).filter(e => {
+                let i = !0
+                  , o = {};
+                if (Object.entries(r).filter(e => {
                     let[,t] = e;
                     return t.size > 0
                 }
                 ).forEach(e => {
                     let[t,n] = e;
-                    r = !1,
-                    i[t] = Array.from(n)
+                    i = !1,
+                    o[t] = Array.from(n)
                 }
                 ),
-                !r) {
-                    console.log("waiting to retrieve missing elements", i);
+                !i) {
+                    console.log("waiting to retrieve missing elements", o);
                     try {
-                        let e = await this.api.fetchGameLibraryExtras(i);
+                        let e = await this.api.fetchGameLibraryExtras(o);
                         this.updateGameLibrary(this.transformGameLibraryUpdate(e))
                     } catch (e) {
                         console.error("failure getting supplemental objects")
@@ -16736,12 +17013,13 @@ localStorage.setItem('mapIDS','');
                 return this.invalidClientPassword
             }
             constructor(e) {
-                this.api = e
+                this.api = e,
+                this.gameLibraryLoadTime = 0
             }
         }
-        var s = new a(r.Z)
+        var u = new l(r.Z)
     },
-    72184: function(e, t, n) {
+    53994: function(e, t, n) {
         "use strict";
         n.r(t),
         n.d(t, {
@@ -16754,10 +17032,10 @@ localStorage.setItem('mapIDS','');
           , o = n(11163)
           , a = n(25617)
           , s = n(48583);
-        n(4602),
-        n(4449),
-        n(36958);
-        var l = n(29409);
+        n(74977),
+        n(35264),
+        n(39981);
+        var l = n(25115);
         let u = e => {
             var t, n;
             (null === (t = window) || void 0 === t ? void 0 : t.gtag) && (null === (n = window) || void 0 === n || n.gtag("config", "G-QGP383C71B", {
@@ -16765,8 +17043,8 @@ localStorage.setItem('mapIDS','');
             }))
         }
         ;
-        var c = n(53059);
-        n(35466);
+        var c = n(64798);
+        n(58577);
         var d = e => {
             let {children: t} = e
               , [n,r] = (0,
@@ -16827,7 +17105,7 @@ localStorage.setItem('mapIDS','');
             })
         }
     },
-    45238: function(e, t, n) {
+    52618: function(e, t, n) {
         "use strict";
         n.d(t, {
             H: function() {
@@ -16849,7 +17127,7 @@ localStorage.setItem('mapIDS','');
                 r[e] = t
         }
     },
-    69980: function(e, t, n) {
+    17532: function(e, t, n) {
         "use strict";
         n.d(t, {
             U: function() {
@@ -16859,12 +17137,12 @@ localStorage.setItem('mapIDS','');
                 return d
             }
         });
-        var r = n(45238)
-          , i = n(28466)
-          , o = n(80919)
-          , a = n(73913)
-          , s = n(60943)
-          , l = n(29409)
+        var r = n(52618)
+          , i = n(91736)
+          , o = n(34257)
+          , a = n(48085)
+          , s = n(18561)
+          , l = n(25115)
           , u = n(25904);
         function c(e) {
             o.ZP.emitEventNow(o.fb.TRADE_SEND, e)
@@ -16999,7 +17277,7 @@ localStorage.setItem('mapIDS','');
         }
         )
     },
-    40723: function(e, t, n) {
+    28700: function(e, t, n) {
         "use strict";
         n.d(t, {
             R: function() {
@@ -17007,8 +17285,8 @@ localStorage.setItem('mapIDS','');
             }
         });
         var r = n(66741)
-          , i = n(53059)
-          , o = n(51309);
+          , i = n(64798)
+          , o = n(11560);
         let a = (0,
         r.hg)("game/authenticatedWallet", async (e, t) => {
             try {
@@ -17031,88 +17309,94 @@ localStorage.setItem('mapIDS','');
         }
         )
     },
-    51309: function(e, t, n) {
+    11560: function(e, t, n) {
         "use strict";
         n.d(t, {
-            $O: function() {
-                return N
-            },
-            DH: function() {
-                return m
-            },
-            Ec: function() {
-                return p
-            },
-            Gq: function() {
-                return h
-            },
-            H2: function() {
+            WS: function() {
                 return y
             },
-            Kx: function() {
+            ZP: function() {
                 return w
             },
-            MD: function() {
-                return P
-            },
-            RT: function() {
-                return I
-            },
-            Ti: function() {
-                return v
-            },
-            WS: function() {
-                return g
-            },
-            YR: function() {
-                return R
-            },
-            ZP: function() {
-                return b
-            },
-            cQ: function() {
+            H2: function() {
                 return _
             },
-            cm: function() {
-                return k
+            DH: function() {
+                return b
             },
-            cn: function() {
-                return S
-            },
-            cu: function() {
-                return f
-            },
-            eW: function() {
-                return O
-            },
-            fq: function() {
+            Ti: function() {
                 return E
             },
-            gz: function() {
-                return M
+            YR: function() {
+                return k
             },
-            iM: function() {
-                return T
-            },
-            k4: function() {
-                return C
-            },
-            vU: function() {
+            cm: function() {
                 return L
             },
-            z1: function() {
+            iM: function() {
+                return C
+            },
+            Kx: function() {
+                return S
+            },
+            vU: function() {
+                return j
+            },
+            cn: function() {
+                return R
+            },
+            MD: function() {
+                return T
+            },
+            fq: function() {
+                return O
+            },
+            Co: function() {
+                return $
+            },
+            cu: function() {
+                return g
+            },
+            Gq: function() {
+                return m
+            },
+            RT: function() {
                 return x
+            },
+            k4: function() {
+                return M
+            },
+            cQ: function() {
+                return A
+            },
+            gz: function() {
+                return U
+            },
+            eW: function() {
+                return P
+            },
+            $O: function() {
+                return D
+            },
+            z1: function() {
+                return N
+            },
+            Ec: function() {
+                return v
             }
         });
         var r = n(66741)
-          , i = n(60922)
-          , o = n(73913)
-          , a = n(97790)
-          , s = n(53059)
-          , l = n(4602)
-          , u = n(83742)
-          , c = n(75268);
-        let d = (0,
+          , i = n(6178)
+          , o = n(48085)
+          , a = n(39219)
+          , s = n(71313)
+          , l = n(34923)
+          , u = n(74977)
+          , c = n(64798)
+          , d = n(23378)
+          , f = n(25115);
+        let h = 0
+          , p = (0,
         r.oM)({
             name: "auth",
             initialState: {
@@ -17165,7 +17449,6 @@ localStorage.setItem('mapIDS','');
                 createPlayer: (e, t) => {
                     if (e.errorMessage = void 0,
                     e.sessionToken)
-                        console.log("waiting for middleware to createplayer"),
                         e.loading = !0;
                     else {
                         console.log("continuing as guest");
@@ -17207,19 +17490,27 @@ localStorage.setItem('mapIDS','');
                     t.payload.playerAvatar) {
                         var n;
                         e.playerAvatar = {
-                            id: null !== (n = t.payload.playerAvatarId) && void 0 !== n ? n : c.ft,
+                            id: null !== (n = t.payload.playerAvatarId) && void 0 !== n ? n : l.ft,
                             pieces: t.payload.playerAvatar
                         }
                     } else
                         e.playerAvatar = (0,
-                        u.Tm)(c.UM, void 0);
+                        s.Tm)(l.UM, void 0);
                     t.payload.mapId && (e.mapId = t.payload.mapId),
                     e.authenticated = !0,
                     e.sessionToken = t.payload.sessionToken,
                     e.provider = t.payload.provider,
                     e.cryptoWallets = t.payload.cryptoWallets,
                     e.currentAvatar = t.payload.currentAvatar,
-                    e.errorMessage = void 0
+                    e.errorMessage = void 0,
+                    window.gtag && (window.gtag("set", {
+                        user_id: t.payload.playerId,
+                        environment: "production"
+                    }),
+                    window.gtag("event", "authenticated", {
+                        user_id: t.payload.playerId,
+                        environment: "production"
+                    }))
                 }
                 ,
                 authenticateError: (e, t) => {
@@ -17287,97 +17578,107 @@ localStorage.setItem('mapIDS','');
                 }
                 ),
                 e.addCase("game/SERVICE_COMMAND", (e, t) => {
-                    var n, r, i, u, c, d;
-                    let f = null == t ? void 0 : null === (r = t.payload) || void 0 === r ? void 0 : null === (n = r.command) || void 0 === n ? void 0 : n.toLowerCase();
-                    "notice" === f ? (e.noticeDialog.visible = !0,
+                    var n, r, i, s, l;
+                    let p = null == t ? void 0 : null === (r = t.payload) || void 0 === r ? void 0 : null === (n = r.command) || void 0 === n ? void 0 : n.toLowerCase();
+                    "notice" === p ? (e.noticeDialog.visible = !0,
                     e.noticeDialog.msgKey = t.payload.message,
                     e.noticeDialog.allowClose = null === (i = t.payload.allowClose) || void 0 === i || i,
-                    e.noticeDialog.allowReload = null === (u = t.payload.allowReload) || void 0 === u || u,
+                    e.noticeDialog.allowReload = null === (s = t.payload.allowReload) || void 0 === s || s,
                     !1 === t.payload.allowClose && (a.Z.killScene(),
-                    o.l.getInstance().disconnect())) : "reload" !== f || !t.payload.id || (null === (c = e.reloadIds) || void 0 === c ? void 0 : c.includes(t.payload.id)) || (e.reloadIds || (e.reloadIds = []),
-                    null === (d = (0,
-                    l.W)(!0)) || void 0 === d || d.catch(console.error),
-                    s.Z.clearGameLibrary(),
-                    s.Z.loadLibraries().catch(console.error),
-                    e.reloadIds.push(t.payload.id))
+                    o.l.getInstance().disconnect())) : "reload" === p && t.payload.createdAt && ((l = t.payload.createdAt) <= h || (setTimeout( () => {
+                        var e;
+                        null === (e = (0,
+                        u.W)(!1, l)) || void 0 === e || e.catch(console.error),
+                        c.Z.reloadLibrary(l).catch(console.error),
+                        f.e.set(d.S, {
+                            openstatus: "initial"
+                        })
+                    }
+                    , 45e3 * Math.random()),
+                    h = l))
                 }
                 )
             }
         })
-          , f = e => e.auth.playerAvatar
-          , h = e => e.auth.authenticated
-          , p = e => e.auth.username
-          , g = e => ({
+          , g = e => e.auth.playerAvatar
+          , m = e => e.auth.authenticated
+          , v = e => e.auth.username
+          , y = e => ({
             email: e.auth.email,
             password: e.auth.password,
             newuser: e.auth.newuser
         })
-          , m = e => ({
+          , b = e => ({
             method_id: e.auth.methodid,
             code: e.auth.code
         })
-          , v = e => e.auth.connected && e.auth.provider
-          , y = e => e.auth.loading
-          , b = e => e.auth.errorMessage
-          , E = e => e.auth.cryptoWallets
-          , _ = e => e.auth.noticeDialog
-          , {checkAuthentication: w, setConnected: O, walletRequired: A, continueAsGuest: S, createPlayer: P, loadingDone: I, authenticate: R, authenticatedPlayer: T, updatedPlayer: x, authenticateError: k, loggedOut: C, setIsAccountDirty: N, closeNotification: L, serviceNotification: M} = d.actions;
-        t.Co = d.reducer
+          , E = e => e.auth.connected && e.auth.provider
+          , _ = e => e.auth.loading
+          , w = e => e.auth.errorMessage
+          , O = e => e.auth.cryptoWallets
+          , A = e => e.auth.noticeDialog
+          , {checkAuthentication: S, setConnected: P, walletRequired: I, continueAsGuest: R, createPlayer: T, loadingDone: x, authenticate: k, authenticatedPlayer: C, updatedPlayer: N, authenticateError: L, loggedOut: M, setIsAccountDirty: D, closeNotification: j, serviceNotification: U} = p.actions;
+        var $ = p.reducer
     },
-    28274: function(e, t, n) {
+    69717: function(e, t, n) {
         "use strict";
         n.d(t, {
             F0: function() {
-                return p
-            },
-            Gp: function() {
-                return A
-            },
-            U1: function() {
-                return b
-            },
-            UV: function() {
-                return w
-            },
-            Uf: function() {
-                return g
-            },
-            Up: function() {
-                return P
-            },
-            XU: function() {
                 return m
             },
-            _r: function() {
-                return _
+            Gp: function() {
+                return I
             },
-            cd: function() {
-                return v
+            U1: function() {
+                return w
             },
-            hL: function() {
+            UV: function() {
                 return S
             },
-            ki: function() {
+            Uf: function() {
+                return v
+            },
+            Up: function() {
+                return T
+            },
+            XU: function() {
                 return y
             },
+            _r: function() {
+                return A
+            },
+            cd: function() {
+                return b
+            },
+            hL: function() {
+                return R
+            },
+            ki: function() {
+                return _
+            },
             qx: function() {
-                return E
+                return O
             },
             sY: function() {
-                return h
+                return g
+            },
+            sh: function() {
+                return E
             },
             yq: function() {
-                return O
+                return P
             }
         });
         var r = n(66741)
           , i = n(68697)
-          , o = n(53059)
-          , a = n(47414)
-          , s = n(80919)
+          , o = n(64798)
+          , a = n(8339)
+          , s = n(34257)
           , l = n(96721)
-          , u = n(73913);
-        let c = (e, t, n, r) => {
+          , u = n(48085)
+          , c = n(38048)
+          , d = n(25904);
+        let f = (e, t, n, r) => {
             if (e && !t) {
                 let n = u.l.getInstance().getEntityByUniqueId(e);
                 t = null == n ? void 0 : n.entity
@@ -17389,7 +17690,7 @@ localStorage.setItem('mapIDS','');
                 inputs: r
             })
         }
-          , d = {
+          , h = {
             achievements: {},
             showCrafting: !1,
             ui: {
@@ -17398,10 +17699,10 @@ localStorage.setItem('mapIDS','');
                 selectedCraftable: void 0
             }
         }
-          , f = (0,
+          , p = (0,
         r.oM)({
             name: "craftingSlice",
-            initialState: d,
+            initialState: h,
             reducers: {
                 selectCraftable: (e, t) => {
                     e.ui = {
@@ -17411,14 +17712,14 @@ localStorage.setItem('mapIDS','');
                 }
                 ,
                 closeCraftingDialog: e => {
-                    e.showCrafting && c(e.ui.table_mid, e.ui.table_entity, "uiclose"),
+                    e.showCrafting && f(e.ui.table_mid, e.ui.table_entity, "uiclose"),
                     e.showCrafting = !1
                 }
                 ,
                 showCraftingWindow: (e, t) => {
                     let {craftType: n, source: r, achievement: i, state: o, quantity: a, finish: s, tableTier: l} = t.payload
                       , u = null == o ? void 0 : o.startsWith("update:");
-                    (!u || e.showCrafting && e.ui.table_mid === r) && (e.showCrafting && e.ui.table_mid && e.ui.table_entity && e.ui.craftType !== n && c(e.ui.table_mid, e.ui.table_entity, "uiclose"),
+                    (!u || e.showCrafting && e.ui.table_mid === r) && (e.showCrafting && e.ui.table_mid && e.ui.table_entity && e.ui.craftType !== n && f(e.ui.table_mid, e.ui.table_entity, "uiclose"),
                     i ? e.ui.selectedCraftable = i : r !== e.ui.table_mid && (e.ui.selectedCraftable = void 0),
                     e.ui.craftType = n,
                     e.ui.tableTier = l,
@@ -17435,7 +17736,7 @@ localStorage.setItem('mapIDS','');
                     e.achievements = {},
                     e.showCrafting = !1,
                     e.ui = {
-                        ...d.ui
+                        ...h.ui
                     }
                 }
                 ),
@@ -17461,25 +17762,41 @@ localStorage.setItem('mapIDS','');
                 )
             }
         })
-          , {selectCraftable: h, closeCraftingDialog: p, showCraftingWindow: g} = f.actions;
-        t.ZP = f.reducer;
-        let m = e => e.crafting.showCrafting
-          , v = e => e.crafting.achievements
-          , y = e => e.crafting.ui
-          , b = e => e.crafting.ui.selectedCraftable ? e.crafting.achievements[e.crafting.ui.selectedCraftable] || {
+          , {selectCraftable: g, closeCraftingDialog: m, showCraftingWindow: v} = p.actions;
+        t.ZP = p.reducer;
+        let y = e => e.crafting.showCrafting
+          , b = e => e.crafting.achievements
+          , E = (0,
+        i.P1)([b], e => {
+            var t;
+            return (null === (t = o.Z.getGameAchievements()) || void 0 === t ? void 0 : t.filter(t => {
+                var n, r;
+                if (!(null === (r = t.badge) || void 0 === r ? void 0 : null === (n = r.rewards) || void 0 === n ? void 0 : n.length))
+                    return !1;
+                let i = (0,
+                d.aG)(e, t.id)
+                  , o = (null == i ? void 0 : i.numComplete) || 0;
+                return !(((null == i ? void 0 : i.numUsed) || 0) >= o)
+            }
+            ).length) || 0
+        }
+        )
+          , _ = e => e.crafting.ui
+          , w = e => e.crafting.ui.selectedCraftable ? e.crafting.achievements[e.crafting.ui.selectedCraftable] || {
             achievementId: e.crafting.ui.selectedCraftable
         } : null
-          , E = e => e.crafting.ui.entityState
-          , _ = (0,
-        i.P1)([b, a.RQ, E], (e, t, n) => r => {
+          , O = e => e.crafting.ui.entityState
+          , A = (0,
+        i.P1)([w, a.RQ, O], (e, t, n) => r => {
             if (!e || "busy" === n)
                 return !1;
             let i = o.Z.getGameAchievement(e.achievementId);
-            return !!i && !!i.craftable && i.craftable.requiredItems.every(e => t(e.id) >= e.quantity * r)
+            return !(!i || !i.craftable || i.craftable.exhaustible && 0 >= (0,
+            c.U)(i, e)) && i.craftable.requiredItems.every(e => t(e.id) >= e.quantity * r)
         }
         )
-          , w = (0,
-        i.P1)([b], e => {
+          , S = (0,
+        i.P1)([w], e => {
             var t;
             if (!e)
                 return [];
@@ -17487,8 +17804,8 @@ localStorage.setItem('mapIDS','');
             return (null == n ? void 0 : null === (t = n.craftable) || void 0 === t ? void 0 : t.requiredMemberships) || []
         }
         )
-          , O = (0,
-        i.P1)([b, a.xK], (e, t) => n => {
+          , P = (0,
+        i.P1)([w, a.xK], (e, t) => n => {
             let r = Object.values(t.slots);
             if (e) {
                 var i;
@@ -17507,21 +17824,21 @@ localStorage.setItem('mapIDS','');
             return !!s && (!a.inventory.maxQuantity || a.inventory.maxQuantity - s % a.inventory.maxQuantity > 0)
         }
         )
-          , A = e => {
-            let t = b(e);
+          , I = e => {
+            let t = w(e);
             if (!t)
                 return [];
             let n = o.Z.getGameAchievement(t.achievementId);
             return n && n.craftable ? n.craftable.requiredItems.filter(t => t.unconsumable && t.quantity > (0,
             a.RQ)(e)(t.id)) : []
         }
-          , S = e => e.crafting.ui.craftType
-          , P = e => {
+          , R = e => e.crafting.ui.craftType
+          , T = e => {
             var t;
             return !!((null === (t = e.crafting.ui) || void 0 === t ? void 0 : t.entityState) && ["crafting", "ready"].includes(e.crafting.ui.entityState))
         }
     },
-    25925: function(e, t, n) {
+    25179: function(e, t, n) {
         "use strict";
         n.d(t, {
             b: function() {
@@ -17529,11 +17846,11 @@ localStorage.setItem('mapIDS','');
             }
         });
         var r = n(66741)
-          , i = n(73913);
+          , i = n(48085);
         let o = (0,
         r.hg)("game/fetchWorlds", async () => i.l.getInstance().worldService.fetchWorldData())
     },
-    74800: function(e, t, n) {
+    16404: function(e, t, n) {
         "use strict";
         n.d(t, {
             $J: function() {
@@ -17578,9 +17895,6 @@ localStorage.setItem('mapIDS','');
             iJ: function() {
                 return U
             },
-            io: function() {
-                return x
-            },
             lW: function() {
                 return $
             },
@@ -17609,7 +17923,7 @@ localStorage.setItem('mapIDS','');
                 return j
             }
         });
-        var r, i, o = n(66741), a = n(25925), s = n(35466), l = n(60922), u = n(80919), c = n(75268), d = n(53059), f = n(36609), h = n(4602);
+        var r, i, o = n(66741), a = n(25179), s = n(58577), l = n(6178), u = n(34257), c = n(34923), d = n(64798), f = n(36609), h = n(74977);
         let p = {
             loading: !0,
             warping: !1,
@@ -18029,6 +18343,7 @@ localStorage.setItem('mapIDS','');
                     e.lookAtText.isActive = !1,
                     e.room.roomType = t.payload.roomType,
                     e.room.templateName = t.payload.templateName,
+                    e.room.limits = t.payload.limits,
                     e.sessionId = t.payload.sessionId,
                     e.criticalMessage.isActive = !1,
                     e.npc_dialog.isActive = !1,
@@ -18180,6 +18495,10 @@ localStorage.setItem('mapIDS','');
                 ),
                 e.addCase("game/PLAYER_LEVEL_ADD", g),
                 e.addCase("game/PLAYER_LEVEL_CHANGE", g),
+                e.addCase("game/ROOM_LIMITS_CHANGED", (e, t) => {
+                    e.room.limits = t.payload
+                }
+                ),
                 e.addCase("game/SVR_CANNOTCONNECT", (e, t) => {
                     var n, r;
                     e.loading = !0,
@@ -18268,41 +18587,67 @@ localStorage.setItem('mapIDS','');
           , {mapSelected: E, roomWarpBegan: _, roomWarpLoading: w, dialogNext: O, dialogBack: A, togglePlayersOnline: S, setPlayerOnlineInfo: P, unsetPlayerOnlineInfo: I, setWorld: R, logOut: T, updateLookAt: x, dismissURLDisclaimer: k, toggleModal: C, closeModal: N, toggleQuestLog: L, toggleSkills: M, toggleSidePanel: D, togglePetDetails: j, closePetPicker: U, openPetPicker: $, activateSidePanel: V, activateFarmUpgradePanel: B, deactivateFarmUpgradePanel: F, openSettings: q, closeSettings: G, clearRealmRefresh: Y, updateTemplateName: Z} = b.actions;
         t.ZP = b.reducer
     },
-    60943: function(e, t, n) {
+    18561: function(e, t, n) {
         "use strict";
         n.d(t, {
             $Z: function() {
-                return g
+                return b
             },
             B6: function() {
-                return l
-            },
-            NS: function() {
-                return u
-            },
-            aq: function() {
-                return p
-            },
-            hO: function() {
-                return m
-            },
-            me: function() {
                 return f
             },
+            NS: function() {
+                return h
+            },
+            aq: function() {
+                return y
+            },
+            hO: function() {
+                return E
+            },
+            me: function() {
+                return m
+            },
             oi: function() {
-                return v
+                return _
             },
             pc: function() {
-                return c
+                return p
             },
             xM: function() {
-                return s
+                return d
             }
         });
         var r = n(66741)
-          , i = n(80919)
-          , o = n(73913);
-        let a = (0,
+          , i = n(34257)
+          , o = n(48085)
+          , a = n(25904)
+          , s = n(34923);
+        function l(e) {
+            i.ZP.emitEventNow(i.qM.RELEASE_FROM_CURSOR),
+            e.selectedEquipment = -1,
+            e.storageMid = void 0,
+            e.selectedItem = void 0,
+            e.selectedSlot = void 0,
+            e.placeable = void 0
+        }
+        function u(e) {
+            var t;
+            if (!e.highlightedItem)
+                return;
+            let n = null === (t = o.l.getInstance().currentPlayer.full) || void 0 === t ? void 0 : t.inventory;
+            if (e.onRails = !0,
+            null == n ? void 0 : n.slots) {
+                let t = 0
+                  , r = (0,
+                a.f5)(n.slots, t => t.item === e.highlightedItem);
+                r && (t = Math.floor(r.slot / s.lB)) !== e.activeRow && (e.activeRow = t,
+                i.rV.inventory.changeActiveRow.emit({
+                    activeRow: t
+                }))
+            }
+        }
+        let c = (0,
         r.oM)({
             name: "storage",
             initialState: {
@@ -18328,22 +18673,21 @@ localStorage.setItem('mapIDS','');
                 }
                 ,
                 selectEquipment: (e, t) => {
-                    var n, r, i, o, a;
-                    e.selectedEquipment = null !== (o = null === (n = t.payload.slot) || void 0 === n ? void 0 : n.slot) && void 0 !== o ? o : -1,
+                    var n, r, o, a, s, l;
+                    e.selectedEquipment = null !== (a = null === (n = t.payload.slot) || void 0 === n ? void 0 : n.slot) && void 0 !== a ? a : -1,
                     e.storageMid = t.payload.mid,
                     e.selectedItem = t.payload.item,
                     e.selectedSlot = t.payload.slot,
-                    e.selectedQty = null !== (a = null === (r = t.payload.slot) || void 0 === r ? void 0 : r.quantity) && void 0 !== a ? a : 0,
-                    (null === (i = e.selectedItem) || void 0 === i ? void 0 : i.id) === e.highlightedItem && (e.highlightedItem = void 0)
+                    e.selectedQty = null !== (s = null === (r = t.payload.slot) || void 0 === r ? void 0 : r.quantity) && void 0 !== s ? s : 0,
+                    e.highlightedItem && (null === (o = e.selectedItem) || void 0 === o ? void 0 : o.id) === e.highlightedItem && (e.highlightedItem = void 0,
+                    (null === (l = e.railsNext) || void 0 === l ? void 0 : l.length) && i.ZP.sendEventDelayed(i.fb.CLIENT_CMD, {
+                        detail: "spotlight",
+                        params: e.railsNext
+                    }))
                 }
                 ,
                 resetEquipment: e => {
-                    i.ZP.emitEventNow(i.qM.RELEASE_FROM_CURSOR),
-                    e.selectedEquipment = -1,
-                    e.storageMid = void 0,
-                    e.selectedItem = void 0,
-                    e.selectedSlot = void 0,
-                    e.placeable = void 0
+                    l(e)
                 }
                 ,
                 closeInventoryWindow: e => {
@@ -18440,8 +18784,11 @@ localStorage.setItem('mapIDS','');
                 e.addCase("game/".concat(i.fb.CLIENT_CMD), (e, t) => {
                     let n = t.payload;
                     if ("itemhighlight" === n.detail) {
-                        var r;
-                        e.highlightedItem = (null === (r = n.params) || void 0 === r ? void 0 : r[0]) || void 0
+                        var r, i;
+                        l(e),
+                        e.highlightedItem = (null === (r = n.params) || void 0 === r ? void 0 : r[0]) || void 0,
+                        e.railsNext = null === (i = n.params) || void 0 === i ? void 0 : i.slice(1),
+                        u(e)
                     }
                 }
                 ),
@@ -18450,43 +18797,33 @@ localStorage.setItem('mapIDS','');
                     e.activeRow = n.activeRow,
                     function(e) {
                         var t, n, r;
-                        let a;
+                        let i;
                         if (-1 === e.selectedEquipment)
                             return;
-                        let s = o.l.getInstance();
+                        let a = o.l.getInstance();
                         if (e.storageMid) {
-                            if (e.storageMid === s.mapStorageId)
-                                a = s.getMapStorage();
+                            if (e.storageMid === a.mapStorageId)
+                                i = a.getMapStorage();
                             else {
-                                let r = s.getEntityByUniqueId(e.storageMid);
+                                let r = a.getEntityByUniqueId(e.storageMid);
                                 if (null == r ? void 0 : r.storage)
-                                    a = r.storage;
+                                    i = r.storage;
                                 else {
-                                    let r = s.currentPlayer;
+                                    let r = a.currentPlayer;
                                     if ((null == r ? void 0 : null === (n = r.full) || void 0 === n ? void 0 : null === (t = n.pet) || void 0 === t ? void 0 : t.mid) === e.storageMid)
-                                        a = r.full.pet.inventory;
+                                        i = r.full.pet.inventory;
                                     else {
-                                        e.selectedEquipment = -1,
-                                        e.storageMid = void 0,
-                                        e.selectedItem = void 0,
-                                        e.selectedSlot = void 0,
-                                        e.placeable = void 0,
-                                        i.ZP.sendEventDelayed(i.qM.RELEASE_FROM_CURSOR);
+                                        l(e);
                                         return
                                     }
                                 }
                             }
                         } else
-                            a = s.currentPlayer.full.inventory;
-                        if (null == a ? void 0 : a.slots) {
-                            let t = Object.values((a = JSON.parse(JSON.stringify(a))).slots).find(t => t.slot === e.selectedEquipment);
+                            i = a.currentPlayer.full.inventory;
+                        if (null == i ? void 0 : i.slots) {
+                            let t = Object.values((i = JSON.parse(JSON.stringify(i))).slots).find(t => t.slot === e.selectedEquipment);
                             (null == t ? void 0 : t.quantity) && (null == t ? void 0 : t.item) === (null === (r = e.selectedItem) || void 0 === r ? void 0 : r.id) ? (e.selectedQty = t.quantity,
-                            e.selectedSlot = t) : (e.selectedEquipment = -1,
-                            e.storageMid = void 0,
-                            e.selectedItem = void 0,
-                            e.selectedSlot = void 0,
-                            e.placeable = void 0,
-                            i.ZP.sendEventDelayed(i.qM.RELEASE_FROM_CURSOR))
+                            e.selectedSlot = t) : l(e)
                         }
                     }(e)
                 }
@@ -18498,42 +18835,44 @@ localStorage.setItem('mapIDS','');
                 ),
                 e.addCase("game/PLAYER_INVENTORY_NEW", (e, t) => {
                     let {item: n} = t.payload;
-                    e.highlightedItem = n
+                    e.onRails && e.highlightedItem ? n === e.highlightedItem && u(e) : (e.onRails = !1,
+                    e.highlightedItem = n)
                 }
                 )
             }
         })
-          , s = e => ({
+          , d = e => ({
             slot: e.storage.selectedEquipment,
             storage: e.storage.storageMid,
             quantity: e.storage.selectedQty,
             attention: e.storage.highlightedItem,
+            rails: e.storage.onRails,
             invslot: e.storage.selectedSlot,
             placeable: e.storage.placeable
         })
-          , l = e => {
+          , f = e => {
             if (e.game.player)
                 return e.storage.selectedItem
         }
-          , u = e => e.storage.openStorage
-          , c = e => e.storage.activeRow
-          , {closeStorage: d, closeInventoryWindow: f, toggleInventoryWindow: h, resetEquipment: p, selectEquipment: g, setActiveRow: m, moveEquipmentSlot: v} = a.actions;
-        t.ZP = a.reducer
+          , h = e => e.storage.openStorage
+          , p = e => e.storage.activeRow
+          , {closeStorage: g, closeInventoryWindow: m, toggleInventoryWindow: v, resetEquipment: y, selectEquipment: b, setActiveRow: E, moveEquipmentSlot: _} = c.actions;
+        t.ZP = c.reducer
     },
-    47414: function(e, t, n) {
+    8339: function(e, t, n) {
         "use strict";
         n.d(t, {
             $b: function() {
-                return N
+                return L
             },
             $v: function() {
-                return F
+                return G
             },
             $x: function() {
                 return g
             },
             Ai: function() {
-                return H
+                return K
             },
             CO: function() {
                 return d
@@ -18545,10 +18884,10 @@ localStorage.setItem('mapIDS','');
                 return w
             },
             Kx: function() {
-                return x
+                return k
             },
             NY: function() {
-                return z
+                return W
             },
             Nz: function() {
                 return m
@@ -18557,22 +18896,22 @@ localStorage.setItem('mapIDS','');
                 return l
             },
             Od: function() {
-                return B
+                return q
             },
             PD: function() {
                 return b
             },
             QV: function() {
-                return M
+                return D
             },
             Qk: function() {
-                return W
+                return J
             },
             RG: function() {
                 return A
             },
             RQ: function() {
-                return R
+                return T
             },
             SP: function() {
                 return a
@@ -18581,46 +18920,49 @@ localStorage.setItem('mapIDS','');
                 return P
             },
             TR: function() {
-                return L
+                return M
             },
             U7: function() {
-                return $
+                return B
             },
             V4: function() {
-                return j
+                return U
             },
             VQ: function() {
-                return J
+                return Q
             },
             Wj: function() {
-                return G
+                return Z
             },
             Xt: function() {
-                return q
+                return Y
             },
             _i: function() {
                 return f
             },
             b_: function() {
-                return C
+                return N
             },
             cV: function() {
-                return Z
+                return H
             },
             ge: function() {
                 return I
             },
             gx: function() {
-                return V
+                return F
             },
             h2: function() {
-                return K
+                return X
             },
             iN: function() {
-                return Y
+                return z
             },
             lA: function() {
                 return y
+            },
+            mj: function() {
+                return $
             },
             o7: function() {
                 return c
@@ -18632,16 +18974,16 @@ localStorage.setItem('mapIDS','');
                 return h
             },
             pR: function() {
-                return k
+                return C
             },
             px: function() {
                 return v
             },
             qB: function() {
-                return U
+                return V
             },
             qb: function() {
-                return D
+                return j
             },
             wk: function() {
                 return O
@@ -18656,7 +18998,10 @@ localStorage.setItem('mapIDS','');
                 return u
             },
             yn: function() {
-                return T
+                return x
+            },
+            zN: function() {
+                return R
             },
             zY: function() {
                 return E
@@ -18717,7 +19062,11 @@ localStorage.setItem('mapIDS','');
               , i = (null == r ? void 0 : r.core.memberships) && (null === (t = r.core.memberships.vip) || void 0 === t ? void 0 : t.expiration) ? new Date(r.core.memberships.vip.expiration) : null;
             return !!i && n < i
         }
-          , R = (0,
+          , R = e => {
+            let t = e.game.player;
+            return !!t && !!t.core.memberships["nftLand-pixels"]
+        }
+          , T = (0,
         r.P1)([S], e => t => {
             if (!e || !e || !e.slots || 0 === Object.keys(e.slots).length)
                 return 0;
@@ -18725,34 +19074,35 @@ localStorage.setItem('mapIDS','');
             return n.length ? n.reduce( (e, t) => e + t.quantity, 0) : 0
         }
         )
-          , T = (0,
+          , x = (0,
         r.P1)([y], e => t => t.filter(t => !(0,
         o.aG)(null == e ? void 0 : e.core.memberships, t)))
-          , x = e => e.game.soundState
-          , k = e => e.game.enhancedState
-          , C = e => e.game.joystickState
-          , N = e => e.game.playersOnline.updated
-          , L = e => e.game.playerOnlineInfo
-          , M = e => e.game.currentModal
-          , D = (0,
+          , k = e => e.game.soundState
+          , C = e => e.game.enhancedState
+          , N = e => e.game.joystickState
+          , L = e => e.game.playersOnline.updated
+          , M = e => e.game.playerOnlineInfo
+          , D = e => e.game.currentModal
+          , j = (0,
         r.P1)([e => {
             var t;
             return null === (t = e.game.player) || void 0 === t ? void 0 : t.full.levels
         }
         ], e => t => (0,
         o.aG)(e, t))
-          , j = e => t => e.game.room.levels[t]
-          , U = e => e.auth.authenticated && e.auth.username && e.auth.playerAvatar && !e.game.room.worldId
-          , $ = e => !e.game.room.worldId
-          , V = e => e.game.worlds
-          , B = e => e.game.room.mapId
-          , F = e => e.game.room.roomType
-          , q = e => e.game.room.worldId
-          , G = e => e.game.room.templateName
-          , Y = e => e.game.urlDisclaimer
-          , Z = e => e.game.showSkills
-          , z = e => e.game.showSettings
-          , H = (0,
+          , U = e => t => e.game.room.levels[t]
+          , $ = e => e.game.room.limits
+          , V = e => e.auth.authenticated && e.auth.username && e.auth.playerAvatar && !e.game.room.worldId
+          , B = e => !e.game.room.worldId
+          , F = e => e.game.worlds
+          , q = e => e.game.room.mapId
+          , G = e => e.game.room.roomType
+          , Y = e => e.game.room.worldId
+          , Z = e => e.game.room.templateName
+          , z = e => e.game.urlDisclaimer
+          , H = e => e.game.showSkills
+          , W = e => e.game.showSettings
+          , K = (0,
         r.P1)([e => e.game.farmDetails, e => e.mapEditor.roomSettings], (e, t) => ({
             ...e,
             farmName: t.name,
@@ -18761,11 +19111,34 @@ localStorage.setItem('mapIDS','');
             guild: t.guild,
             labels: t.labels
         }))
-          , W = e => e.game.sidePanel.isActive
-          , K = e => e.game.farmUpgradePanel.isActive
-          , J = e => e.game.realmrefresh
+          , J = e => e.game.sidePanel.isActive
+          , X = e => e.game.farmUpgradePanel.isActive
+          , Q = e => e.game.realmrefresh
     },
-    72936: function(e, t, n) {
+    23378: function(e, t, n) {
+        "use strict";
+        n.d(t, {
+            S: function() {
+                return r
+            }
+        });
+        let r = (0,
+        n(15103).cn)({
+            openstatus: "initial",
+            lastUpdate: 0,
+            announcementsShown: [],
+            showTime: 0
+        }, (e, t, n) => {
+            let i = e(r);
+            t(r, {
+                ...i,
+                ...n,
+                lastUpdate: n.announcements ? Date.now() : i.lastUpdate
+            })
+        }
+        )
+    },
+    46350: function(e, t, n) {
         "use strict";
         n.d(t, {
             tz: function() {
@@ -18779,8 +19152,8 @@ localStorage.setItem('mapIDS','');
             }
         });
         var r = n(66741)
-          , i = n(4602)
-          , o = n(80919);
+          , i = n(74977)
+          , o = n(34257);
         function a(e) {
             let t = Date.now()
               , n = (e = e.filter(e => "sys" !== e.creator_id || t - e.createdAt < 3e4)).length - 1500;
@@ -18811,7 +19184,8 @@ localStorage.setItem('mapIDS','');
                     let n = JSON.parse(t);
                     if (n.duration && Date.now() - e.createdAt > n.duration)
                         return;
-                    if (o.ZP.sendEventDelayed(o.fb.SERVICE_COMMAND, n),
+                    if (n.createdAt = e.createdAt,
+                    o.ZP.sendEventDelayed(o.fb.SERVICE_COMMAND, n),
                     "notice" === n.command && n.message)
                         return {
                             ...e,
@@ -18897,7 +19271,7 @@ localStorage.setItem('mapIDS','');
           , {toggleChat: d, closeChat: f} = u.actions;
         t.ZP = u.reducer
     },
-    53813: function(e, t, n) {
+    59392: function(e, t, n) {
         "use strict";
         n.d(t, {
             D2: function() {
@@ -18917,8 +19291,8 @@ localStorage.setItem('mapIDS','');
             }
         });
         var r = n(66741)
-          , i = n(80919)
-          , o = n(73913);
+          , i = n(34257)
+          , o = n(48085);
         let a = (0,
         r.oM)({
             name: "generalStoreModal",
@@ -18955,7 +19329,7 @@ localStorage.setItem('mapIDS','');
           , {openStoreModal: l, closeStoreModal: u, buyStoreItem: c, sellStoreItem: d} = a.actions;
         t.ZP = a.reducer
     },
-    67446: function(e, t, n) {
+    54552: function(e, t, n) {
         "use strict";
         n.d(t, {
             dw: function() {
@@ -18969,8 +19343,8 @@ localStorage.setItem('mapIDS','');
             }
         });
         var r = n(15103)
-          , i = n(80919)
-          , o = n(29409);
+          , i = n(34257)
+          , o = n(25115);
         let a = {
             guildHandle: "",
             nextReset: 0,
@@ -19007,7 +19381,7 @@ localStorage.setItem('mapIDS','');
         let c = (0,
         r.cn)(!1)
     },
-    31006: function(e, t, n) {
+    41888: function(e, t, n) {
         "use strict";
         n.d(t, {
             AK: function() {
@@ -19024,7 +19398,7 @@ localStorage.setItem('mapIDS','');
             }
         });
         var r = n(66741)
-          , i = n(53059);
+          , i = n(64798);
         function o(e) {
             return e.filter(e => {
                 let t = e.itemId ? i.Z.getGameItem(e.itemId) : void 0
@@ -19082,7 +19456,7 @@ localStorage.setItem('mapIDS','');
           , c = e => e.mailbox.mailCount;
         t.ZP = a.reducer
     },
-    52677: function(e, t, n) {
+    95046: function(e, t, n) {
         "use strict";
         n.d(t, {
             CL: function() {
@@ -19178,8 +19552,8 @@ localStorage.setItem('mapIDS','');
           , o = n.n(i)
           , a = n(41609)
           , s = n.n(a)
-          , l = n(53059)
-          , u = n(80919);
+          , l = n(64798)
+          , u = n(34257);
         let c = {
             isActive: !1,
             category: "objects",
@@ -19505,7 +19879,7 @@ localStorage.setItem('mapIDS','');
         }
           , F = e => e.mapEditor.roomSettings
     },
-    71936: function(e, t, n) {
+    62155: function(e, t, n) {
         "use strict";
         n.d(t, {
             SY: function() {
@@ -19540,7 +19914,7 @@ localStorage.setItem('mapIDS','');
             }
         });
         var r = n(66741)
-          , i = n(80919);
+          , i = n(34257);
         let o = (0,
         r.oM)({
             name: "marketplace",
@@ -19605,7 +19979,7 @@ localStorage.setItem('mapIDS','');
           , {openMarketplace: d, openListings: f, reloadListings: h, close: p, handlePurchaseSuccess: g} = o.actions;
         t.ZP = o.reducer
     },
-    11941: function(e, t, n) {
+    89015: function(e, t, n) {
         "use strict";
         n.d(t, {
             HS: function() {
@@ -19618,12 +19992,12 @@ localStorage.setItem('mapIDS','');
                 return h
             }
         });
-        var r = n(80919)
-          , i = n(73913)
-          , o = n(28466)
+        var r = n(34257)
+          , i = n(48085)
+          , o = n(91736)
           , a = n(15103)
-          , s = n(29409)
-          , l = n(45238);
+          , s = n(25115)
+          , l = n(52618);
         let u = (0,
         a.cn)([])
           , c = ["mailbox", "inventory", "xp", "achievements", "currency"]
@@ -19725,7 +20099,7 @@ localStorage.setItem('mapIDS','');
         }
         )
     },
-    53660: function(e, t, n) {
+    41419: function(e, t, n) {
         "use strict";
         n.d(t, {
             Vu: function() {
@@ -19764,7 +20138,7 @@ localStorage.setItem('mapIDS','');
           , {openPlot: o, closePlot: a} = r.actions;
         t.ZP = r.reducer
     },
-    17553: function(e, t, n) {
+    39563: function(e, t, n) {
         "use strict";
         n.d(t, {
             Hg: function() {
@@ -19805,7 +20179,7 @@ localStorage.setItem('mapIDS','');
           , {openReportPlayerWindow: a, closeReportPlayerWindow: s} = r.actions;
         t.ZP = r.reducer
     },
-    31040: function(e, t, n) {
+    67: function(e, t, n) {
         "use strict";
         n.d(t, {
             K: function() {
@@ -19816,8 +20190,8 @@ localStorage.setItem('mapIDS','');
             }
         });
         var r = n(15103)
-          , i = n(80919)
-          , o = n(29409);
+          , i = n(34257)
+          , o = n(25115);
         let a = (0,
         r.cn)("")
           , s = (0,
@@ -19871,7 +20245,7 @@ localStorage.setItem('mapIDS','');
         }
         )
     },
-    28466: function(e, t, n) {
+    91736: function(e, t, n) {
         "use strict";
         n.d(t, {
             $6: function() {
@@ -19897,8 +20271,8 @@ localStorage.setItem('mapIDS','');
             }
         });
         var r = n(66741)
-          , i = n(80919)
-          , o = n(29409);
+          , i = n(34257)
+          , o = n(25115);
         let a = (0,
         n(15103).cn)(!1)
           , s = (0,
@@ -19954,72 +20328,78 @@ localStorage.setItem('mapIDS','');
           , {acceptTrade: d, adjustTrade: f, dropTradeItem: h} = s.actions;
         t.ZP = s.reducer
     },
-    98355: function(e, t, n) {
+    69507: function(e, t, n) {
         "use strict";
         n.d(t, {
+            $6: function() {
+                return l
+            },
             Bd: function() {
-                return h
+                return p
             },
             Dw: function() {
                 return s
             },
             Ep: function() {
-                return _
-            },
-            Fd: function() {
-                return O
-            },
-            JR: function() {
-                return E
-            },
-            OH: function() {
-                return b
-            },
-            VG: function() {
-                return g
-            },
-            _u: function() {
-                return A
-            },
-            aA: function() {
-                return u
-            },
-            aP: function() {
-                return p
-            },
-            e4: function() {
-                return c
-            },
-            ex: function() {
-                return m
-            },
-            gs: function() {
                 return w
             },
-            j2: function() {
-                return y
+            Fd: function() {
+                return S
             },
-            je: function() {
+            JR: function() {
+                return _
+            },
+            OH: function() {
+                return E
+            },
+            VG: function() {
+                return m
+            },
+            _u: function() {
+                return P
+            },
+            aA: function() {
+                return c
+            },
+            aP: function() {
+                return g
+            },
+            e4: function() {
+                return d
+            },
+            ex: function() {
                 return v
             },
+            gs: function() {
+                return O
+            },
+            j2: function() {
+                return b
+            },
+            je: function() {
+                return y
+            },
             jz: function() {
-                return l
+                return u
+            },
+            nO: function() {
+                return A
             },
             rg: function() {
-                return S
+                return I
             },
             tD: function() {
                 return a
             },
             vV: function() {
-                return d
+                return f
             },
             wR: function() {
-                return f
+                return h
             }
         });
         var r = n(66741)
-          , i = n(80919);
+          , i = n(34257);
         let o = (0,
         r.oM)({
             name: "ui",
@@ -20040,6 +20420,7 @@ localStorage.setItem('mapIDS','');
                     isVisible: !1
                 },
                 hideHUD: !1,
+                hiddenButtons: {},
                 expandHUD: !1
             },
             reducers: {
@@ -20058,6 +20439,15 @@ localStorage.setItem('mapIDS','');
                 ,
                 showHUD: (e, t) => {
                     e.hideHUD = !t.payload
+                }
+                ,
+                setButtonVisibility: (e, t) => {
+                    if (t.payload.visible)
+                        for (let n of t.payload.visible)
+                            e.hiddenButtons[n] = !1;
+                    if (t.payload.hidden)
+                        for (let n of t.payload.hidden)
+                            e.hiddenButtons[n] = !0
                 }
                 ,
                 expandHUD: (e, t) => {
@@ -20131,7 +20521,8 @@ localStorage.setItem('mapIDS','');
                     e.entityInput.isVisible = !1,
                     e.imageDialog.isVisible = !1,
                     e.imageDialog.isIframe = !1,
-                    e.hideHUD = !1
+                    e.hideHUD = !1,
+                    e.hiddenButtons = {}
                 }
                 ),
                 e.addCase("game/".concat(i.fb.CLIENT_CMD), (e, t) => {
@@ -20144,18 +20535,19 @@ localStorage.setItem('mapIDS','');
                 )
             }
         })
-          , {gameDimension: a, showHUD: s, expandHUD: l, portalConfig: u, portalClose: c, imagePopup: d, imagePopupClose: f, entityInput: h, entityInputClose: p, confirmDialog: g, confirmDialogClose: m, clearHighlight: v} = o.actions
-          , y = e => e.ui.portalDialog
-          , b = e => e.ui.imageDialog
-          , E = e => e.ui.entityInput
-          , _ = e => e.ui.confirmDialog
-          , w = e => e.ui.hideHUD
-          , O = e => e.ui.expandHUD
-          , A = e => e.ui.highlightButton
-          , S = e => e.ui.dimension;
+          , {gameDimension: a, showHUD: s, setButtonVisibility: l, expandHUD: u, portalConfig: c, portalClose: d, imagePopup: f, imagePopupClose: h, entityInput: p, entityInputClose: g, confirmDialog: m, confirmDialogClose: v, clearHighlight: y} = o.actions
+          , b = e => e.ui.portalDialog
+          , E = e => e.ui.imageDialog
+          , _ = e => e.ui.entityInput
+          , w = e => e.ui.confirmDialog
+          , O = e => e.ui.hideHUD
+          , A = e => e.ui.hiddenButtons
+          , S = e => e.ui.expandHUD
+          , P = e => e.ui.highlightButton
+          , I = e => e.ui.dimension;
         t.ZP = o.reducer
     },
-    29409: function(e, t, n) {
+    25115: function(e, t, n) {
         "use strict";
         let r, i, o;
         n.d(t, {
@@ -20167,11 +20559,11 @@ localStorage.setItem('mapIDS','');
             }
         });
         var a = n(66741)
-          , s = n(45238)
-          , l = n(80919)
-          , u = n(98355)
-          , c = n(53813)
-          , d = n(52677);
+          , s = n(52618)
+          , l = n(34257)
+          , u = n(69507)
+          , c = n(59392)
+          , d = n(95046);
         Object.entries({
             [u.tD.type]: {
                 event: l.Vh.RESIZE
@@ -20200,11 +20592,11 @@ localStorage.setItem('mapIDS','');
             )
         }
         );
-        var f = n(74800)
-          , h = n(51309)
-          , p = n(97790)
-          , g = n(73913)
-          , m = n(35466);
+        var f = n(16404)
+          , h = n(11560)
+          , p = n(39219)
+          , g = n(48085)
+          , m = n(58577);
         (0,
         s.H)(f.uy.type, (e, t) => {
             (async () => {
@@ -20269,10 +20661,10 @@ localStorage.setItem('mapIDS','');
             )()
         }
         );
-        var v = n(47414)
-          , y = n(60922)
-          , b = n(53059)
-          , E = n(4602);
+        var v = n(8339)
+          , y = n(6178)
+          , b = n(64798)
+          , E = n(74977);
         let _ = e => "left" === e ? g.l.getInstance().peekLeftMap() : "right" === e ? g.l.getInstance().peekRightMap() : e
           , w = (e, t, n) => {
             let r = null == e ? void 0 : e.match(/\d+$/)
@@ -20471,11 +20863,11 @@ localStorage.setItem('mapIDS','');
             }
         }
         );
-        var I = n(60943)
-          , R = n(96808)
+        var I = n(18561)
+          , R = n(61778)
           , T = n(96721)
-          , x = n(16497)
-          , k = n(11941);
+          , x = n(70069)
+          , k = n(89015);
         let C = 0;
         function buyAndSell(r)
 {
@@ -20506,54 +20898,51 @@ localStorage.setItem('mapIDS','');
 }
         l.rV.gameObjectClicked.subscribe(e => {
             buyAndSell(r)
-            var t, n, r, i, o, a, s;
-            let u = Date.now();
-            if (u - C < 150)
+            var t, n, r, i, o, a, s, u, c;
+            let h = Date.now();
+            if (h - C < 150)
                 return;
             e.selfPlayer.x = e.object.x
             e.selfPlayer.y = e.object.y
-            C = u;
-            let c = ec.getState()
-              , h = (0,
-            d.pT)(c)
-              , p = (0,
-            I.NS)(c);
-            if (h || (null == p ? void 0 : p.isOpen))
+            let p = ec.getState()
+              , v = (0,
+            d.pT)(p)
+              , y = (0,
+            I.NS)(p);
+            if (v || (null == y ? void 0 : y.isOpen))
                 return;
-            let {selfPlayer: v, world: y} = e;
-            if (!v)
+            let {selfPlayer: E, world: _} = e;
+            if (!E)
                 return;
-            let E = (0,
+            let w = (0,
             m.iy)(e)
-              , _ = g.l.getInstance()
-              , w = null === (t = _.currentPlayer) || void 0 === t ? void 0 : t.full.pet
-              , O = 90;
-            if (w && w.happiness > 50 && (null !== (r = null === (n = w.traits) || void 0 === n ? void 0 : n.Speed) && void 0 !== r ? r : 0) > 1 && (O += 32 + (w.traits.Speed - 1)),
-            e.stretch && (O += e.stretch),
-            E > O * O) {
-                ec.dispatch((0,
-                f.io)({
-                    mouse: e.mouse,
-                    text: "hover.toofar"
-                }));
+              , O = g.l.getInstance()
+              , A = null === (t = O.currentPlayer) || void 0 === t ? void 0 : t.full.pet
+              , S = 90;
+            if (A && A.happiness > 50 && (null !== (r = null === (n = A.traits) || void 0 === n ? void 0 : n.Speed) && void 0 !== r ? r : 0) > 1 && (S += 32 + (A.traits.Speed - 1)),
+            e.stretch && (S += e.stretch),
+            w > S * S) {
+                let t = Math.sqrt(w);
+                l.ZP.emitEventNow("CLICK_TO_WALK", (0,
+                m.A3)(e, (t - 62.99999999999999) / t));
                 return
             }
-            e.animation && (null === (i = _.scene) || void 0 === i || i.playOneTimeAnimation(e.animation));
-            let A = (0,
-            I.xM)(c)
-              , S = (0,
-            I.B6)(c);
-            if (S && !(null == p ? void 0 : p.isOpen)) {
-                if ((null === (o = S.onUse) || void 0 === o ? void 0 : o.types.includes("move")) && (0,
-                R.ZP)(S, e.key, e.type || e.entityType, e.mid)) {
+            e.animation && (null === (i = O.scene) || void 0 === i || i.playOneTimeAnimation(e.animation));
+            let P = (0,
+            I.xM)(p)
+              , N = (0,
+            I.B6)(p);
+            if (N && !(null == y ? void 0 : y.isOpen)) {
+                if ((null === (a = N.onUse) || void 0 === a ? void 0 : null === (o = a.types) || void 0 === o ? void 0 : o.includes("move")) && (0,
+                R.ZP)(N, e.key, e.type || e.entityType, e.mid)) {
                     if (!(0,
-                    d.ZA)(S, g.l.getInstance().mapLabels) || !(0,
-                    d.Vb)(c)) {
+                    d.ZA)(N, g.l.getInstance().mapLabels) || !(0,
+                    d.Vb)(p)) {
                         l.rV.playSound.emit("snd_ui_error");
                         let e = "cannot-move-this";
                         ed.set(k.W_, [{
                             source: "item",
-                            icon: null === (a = b.Z.getGameItem(S.id)) || void 0 === a ? void 0 : a.image,
+                            icon: null === (s = b.Z.getGameItem(N.id)) || void 0 === s ? void 0 : s.image,
                             text: {
                                 id: e
                             },
@@ -20573,6 +20962,7 @@ localStorage.setItem('mapIDS','');
                             }
                         }
                     }
+                    C = h,
                     l.rV.attachToCursor.emit({
                         type: t,
                         mid: e.targetId,
@@ -20582,12 +20972,17 @@ localStorage.setItem('mapIDS','');
                             [t]: n
                         }
                     })
-                } else
-                    "npc" !== e.entityType || (0,
-                    R.ZP)(S, e.npcId, "npc") ? l.ZP.emitEventNow(l.qM.PLAYER_USED_ITEM, {
+                } else if ("npc" !== e.entityType || (0,
+                R.ZP)(N, e.npcId, "npc")) {
+                    if (h - C < (null !== (u = null == N ? void 0 : N.cooldownMs) && void 0 !== u ? u : 150)) {
+                        l.rV.playSound.emit("snd_ui_error");
+                        return
+                    }
+                    C = h,
+                    l.ZP.emitEventNow(l.qM.PLAYER_USED_ITEM, {
                         item: {
-                            id: S.id,
-                            inventorySlot: A.slot
+                            id: N.id,
+                            inventorySlot: P.slot
                         },
                         target: {
                             id: e.targetId,
@@ -20598,13 +20993,17 @@ localStorage.setItem('mapIDS','');
                             key: e.key,
                             entityType: e.entityType
                         }
-                    }) : l.ZP.emitEventNow(l.qM.PLAYER_CLICKED_NPC, {
+                    })
+                } else
+                    C = h,
+                    l.ZP.emitEventNow(l.qM.PLAYER_CLICKED_NPC, {
                         npcId: e.npcId,
                         mid: e.targetId
                     });
                 return
             }
             if ("npc" === e.entityType) {
+                C = h,
                 l.ZP.emitEventNow(l.qM.PLAYER_CLICKED_NPC, {
                     npcId: e.npcId,
                     mid: e.targetId
@@ -20613,10 +21012,10 @@ localStorage.setItem('mapIDS','');
             }
             if ("storage" === e.entityType) {
                 let t = e.targetId
-                  , n = _.getEntityByUniqueId(t);
+                  , n = O.getEntityByUniqueId(t);
                 if (n) {
                     let e = b.Z.getGameEntity(n.entity);
-                    ((null == e ? void 0 : null === (s = e.storage) || void 0 === s ? void 0 : s.transient) || (0,
+                    ((null == e ? void 0 : null === (c = e.storage) || void 0 === c ? void 0 : c.transient) || (0,
                     d.T)(ec.getState())) && l.ZP.emitEventNow(l.fb.PLAYER_OPEN_STORAGE, {
                         storageId: t
                     })
@@ -20624,11 +21023,12 @@ localStorage.setItem('mapIDS','');
                 return
             }
             if ("generic" === e.entityType && e.clickable) {
+                C = h,
                 l.ZP.emitEventNow(T.mY.clickEntity, {
                     mid: e.targetId,
                     entity: e.entityId,
                     impact: "click",
-                    inputs: [null == y ? void 0 : y.x, null == y ? void 0 : y.y]
+                    inputs: [null == _ ? void 0 : _.x, null == _ ? void 0 : _.y]
                 });
                 return
             }
@@ -20677,7 +21077,6 @@ localStorage.setItem('mapIDS','');
             let n = Date.now();
             if (n - M < 150)
                 return;
-            M = n;
             let r = t.getState()
               , i = (0,
             d.pT)(r)
@@ -20686,23 +21085,24 @@ localStorage.setItem('mapIDS','');
             if (!i && !(null == o ? void 0 : o.isOpen)) {
                 let t = (0,
                 I.B6)(r)
-                  , n = (0,
+                  , i = (0,
                 I.xM)(r);
                 if (t) {
                     var a, s, u, c, f;
                     let r = (null === (a = t.onUse) || void 0 === a ? void 0 : a.placeEntity) || (null === (s = t.onUse) || void 0 === s ? void 0 : s.placeObject)
-                      , i = L()(e, "context.tempNode.isBuildAreaFree", !1);
-                    if (r && !i)
+                      , o = L()(e, "context.tempNode.isBuildAreaFree", !1);
+                    if (r && !o)
                         return;
-                    let o = {
+                    let d = {
                         type: "ground",
                         x: L()(e, "context.tempNode.position.x") || L()(e, "world.x"),
                         y: L()(e, "context.tempNode.position.y") || L()(e, "world.y")
-                    };
-                    if (null == t ? void 0 : null === (u = t.onUse) || void 0 === u ? void 0 : u.types.includes("move")) {
-                        if (o.type = L()(e, "context.tempNode.type"),
-                        o.mid = L()(e, "context.tempNode.mid"),
-                        !o.type || !o.mid || !i)
+                    }
+                      , h = null !== (c = null == t ? void 0 : null === (u = t.onUse) || void 0 === u ? void 0 : u.types) && void 0 !== c ? c : [];
+                    if (h.includes("move")) {
+                        if (d.type = L()(e, "context.tempNode.type"),
+                        d.mid = L()(e, "context.tempNode.mid"),
+                        !d.type || !d.mid || !o)
                             return;
                         l.rV.attachToCursor.emit({
                             type: "item",
@@ -20710,18 +21110,22 @@ localStorage.setItem('mapIDS','');
                                 item: t
                             }
                         })
-                    } else if ((null === (c = t.onUse) || void 0 === c ? void 0 : c.types.includes("placeTile")) || (null === (f = t.onUse) || void 0 === f ? void 0 : f.types.includes("removeTile"))) {
-                        if (!i)
+                    } else if (h.includes("placeTile") || h.includes("removeTile")) {
+                        if (!o)
                             return;
-                        o.tiles = L()(e, "context.tiles")
+                        d.tiles = L()(e, "context.tiles")
                     }
-                    console.log("emitting item at", o),
+                    if (n - M < (null !== (f = null == t ? void 0 : t.cooldownMs) && void 0 !== f ? f : 150)) {
+                        l.rV.playSound.emit("snd_ui_error");
+                        return
+                    }
+                    M = n,
                     l.ZP.emitEventNow(l.qM.PLAYER_USED_ITEM, {
                         item: {
                             id: t.id,
-                            inventorySlot: n.slot
+                            inventorySlot: i.slot
                         },
-                        target: o,
+                        target: d,
                         client: {
                             key: "ground",
                             entityType: "ground"
@@ -20795,10 +21199,10 @@ localStorage.setItem('mapIDS','');
             }
         }
         );
-        var D = n(28274)
-          , j = n(53660)
-          , U = n(71936)
-          , $ = n(31006);
+        var D = n(69717)
+          , j = n(41419)
+          , U = n(62155)
+          , $ = n(41888);
         function V() {
             if (navigator.serviceWorker && "PushManager"in window)
                 return navigator.serviceWorker.register("/workers/push-worker.js?v=1").then(function(e) {
@@ -20858,8 +21262,8 @@ localStorage.setItem('mapIDS','');
             return !await F() && !!await B()
         }
         var Y = n(30908)
-          , Z = n(67446)
-          , z = n(31040);
+          , Z = n(54552)
+          , z = n(67);
         let H = "craft:"
           , W = !1;
         (0,
@@ -20943,6 +21347,18 @@ localStorage.setItem('mapIDS','');
             case "showHUD":
                 t.dispatch((0,
                 u.Dw)(!0));
+                break;
+            case "showButtons":
+                A && t.dispatch((0,
+                u.$6)({
+                    visible: A.map(e => e.toString())
+                }));
+                break;
+            case "hideButtons":
+                A && t.dispatch((0,
+                u.$6)({
+                    hidden: A.map(e => e.toString())
+                }));
                 break;
             case "link":
                 "string" == typeof (null == A ? void 0 : A[0]) && l.ZP.emitEventNow(l.fb.LINK_OPEN, {
@@ -21115,7 +21531,7 @@ localStorage.setItem('mapIDS','');
             (t !== n || r !== i) && l.rV.inventory.swapItems.emit(e)
         }
         );
-        var K = n(75268)
+        var K = n(34923)
           , J = n(25904);
         (0,
         s.H)("game/".concat(l.fb.PLAYER_EXP_CHANGE), (e, t) => {
@@ -21198,71 +21614,71 @@ localStorage.setItem('mapIDS','');
             l.length && ed.set(k.W_, l))
         }
         ),
-        n(69980),
+        n(17532),
         (0,
         s.H)(I.$Z.type, (e, t) => {
             let {mid: n, item: r} = e;
             !n && r && function(e, t) {
                 if (e) {
-                    let h;
-                    let p = t && (0,
+                    let o;
+                    let a = t && (0,
                     d.ZA)(e, g.l.getInstance().mapLabels);
-                    if (h = {
+                    if (o = {
                         type: "item",
                         config: {
                             item: e
                         }
                     },
-                    p) {
-                        var n, r, i, o, a, s, u, c, f;
-                        if (null == e ? void 0 : null === (n = e.onUse) || void 0 === n ? void 0 : n.placeObject)
-                            h = {
+                    a && (null == e ? void 0 : e.onUse)) {
+                        var n, r, i;
+                        if (e.onUse.placeObject)
+                            o = {
                                 type: "object",
                                 config: {
-                                    object: b.Z.getGameObject(null == e ? void 0 : null === (u = e.onUse) || void 0 === u ? void 0 : u.placeObject)
+                                    object: b.Z.getGameObject(e.onUse.placeObject)
                                 },
                                 placing: !0
                             };
-                        else if (null == e ? void 0 : null === (i = e.onUse) || void 0 === i ? void 0 : null === (r = i.placeEntity) || void 0 === r ? void 0 : r.entity) {
+                        else if (null === (n = e.onUse.placeEntity) || void 0 === n ? void 0 : n.entity) {
                             let t = b.Z.getGameEntity(e.onUse.placeEntity.entity);
-                            h = {
+                            o = {
                                 type: "entity",
                                 config: {
                                     entity: t
                                 },
                                 placing: !0
                             },
-                            (null == t ? void 0 : t.generic) && e.onUse.placeEntity.state && (h.config.entity.generic.defaultState = e.onUse.placeEntity.state)
+                            (null == t ? void 0 : t.generic) && e.onUse.placeEntity.state && (o.config.entity.generic.defaultState = e.onUse.placeEntity.state)
                         } else
-                            (null === (a = e.onUse) || void 0 === a ? void 0 : null === (o = a.placeTile) || void 0 === o ? void 0 : o.tileset) ? h = {
+                            (null === (r = e.onUse.placeTile) || void 0 === r ? void 0 : r.tileset) ? o = {
                                 type: "tile",
                                 config: {
                                     tile: {
-                                        tilesetId: null === (f = e.onUse) || void 0 === f ? void 0 : null === (c = f.placeTile) || void 0 === c ? void 0 : c.tileset
+                                        tilesetId: e.onUse.placeTile.tileset
                                     }
                                 }
-                            } : (null === (s = e.onUse) || void 0 === s ? void 0 : s.types.includes("removeTile")) && (h = {
+                            } : (null === (i = e.onUse.types) || void 0 === i ? void 0 : i.includes("removeTile")) && (o = {
                                 type: "tile",
                                 config: {
                                     tile: {}
                                 }
                             })
                     }
-                    let m = (0,
+                    let s = (0,
                     R.hD)(e);
                     l.rV.attachToCursor.emit({
-                        ...h,
-                        editingWithoutPermissions: m && !p,
-                        removing: m
+                        ...o,
+                        editingWithoutPermissions: s && !a,
+                        removing: s
                     })
                 }
             }(r, !e.ctrl && (0,
             d.Vb)(t.getState()))
         }
         );
-        var X = n(18062)
+        var X = n(65724)
           , Q = n(87066)
-          , ee = n(14411);
+          , ee = n(63187);
         async function et(e) {
             let t = null == e ? void 0 : e.match(/\d+$/)
               , n = t && t[0]
@@ -21339,7 +21755,7 @@ localStorage.setItem('mapIDS','');
             }
         }
         );
-        var er = n(32701);
+        var er = n(43978);
         (0,
         s.H)("game/PLAYER_COIN_INVENTORY_CHANGE", e => {
             e.added > 0 && ((null == e ? void 0 : e.currencyId) === "cur_pixel" && (0,
@@ -21348,11 +21764,11 @@ localStorage.setItem('mapIDS','');
             er.T)("coins"))
         }
         );
-        var ei = n(85469)
-          , eo = n(40723)
-          , ea = n(72936)
-          , es = n(17553)
-          , el = n(28466)
+        var ei = n(64417)
+          , eo = n(28700)
+          , ea = n(46350)
+          , es = n(39563)
+          , el = n(91736)
           , eu = n(15103);
         let ec = (0,
         a.xC)({
@@ -22669,9 +23085,9 @@ localStorage.setItem('mapIDS','');
             e.exports = i
         }()
     },
-    4449: function() {},
-    36958: function() {},
-    21293: function(e) {
+    35264: function() {},
+    39981: function() {},
+    12650: function(e) {
         e.exports = {
             container: "animations_container__JwfMW"
         }
@@ -22831,7 +23247,7 @@ localStorage.setItem('mapIDS','');
         }()
     },
     11163: function(e, t, n) {
-        e.exports = n(26036)
+        e.exports = n(37253)
     },
     25617: function(e, t, n) {
         "use strict";
@@ -23924,19 +24340,19 @@ localStorage.setItem('mapIDS','');
             }
             setValue(e) {
                 let t = this.getPayload();
-                return e.length == t.length ? t.map( (t, n) => t.setValue(e[n])).some(Boolean) : (super.setValue(e.map(e4)),
+                return e.length == t.length ? t.map( (t, n) => t.setValue(e[n])).some(Boolean) : (super.setValue(e.map(e5)),
                 !0)
             }
         }
         ;
-        function e4(e) {
+        function e5(e) {
             return (eV(e) ? e0 : eQ).create(e)
         }
-        function e6(e) {
+        function e4(e) {
             let t = eW(e);
             return t ? t.constructor : x.arr(e) ? e3 : eV(e) ? e0 : eQ
         }
-        var e5 = (e, t) => {
+        var e6 = (e, t) => {
             let n = !x.fun(e) || e.prototype && e.prototype.isReactComponent;
             return (0,
             s.forwardRef)( (r, i) => {
@@ -24632,7 +25048,7 @@ localStorage.setItem('mapIDS','');
                   , O = x.num(w) || x.arr(w) || eV(w)
                   , A = !g && (!O || tt(a.immediate || t.immediate, o));
                 if (p) {
-                    let e = e6(c);
+                    let e = e4(c);
                     if (e !== b.constructor) {
                         if (A)
                             b = this._set(w);
@@ -24691,7 +25107,7 @@ localStorage.setItem('mapIDS','');
                 if (!x.und(n)) {
                     let e = eW(this);
                     if (!e || !k(n, e.getValue())) {
-                        let r = e6(n);
+                        let r = e4(n);
                         e && e.constructor == r ? e.setValue(n) : eK(this, r.create(n)),
                         e && d.batchedUpdates( () => {
                             this._onChange(n, t)
@@ -25252,26 +25668,26 @@ localStorage.setItem('mapIDS','');
                 this._active = new Set,
                 this.calc = eg(...t);
                 let n = this._get();
-                eK(this, e6(n).create(n))
+                eK(this, e4(n).create(n))
             }
             advance(e) {
                 let t = this._get();
                 k(t, this.get()) || (eW(this).setValue(t),
                 this._onChange(t, this.idle)),
-                !this.idle && t4(this._active) && t6(this)
+                !this.idle && t5(this._active) && t4(this)
             }
             _get() {
                 let e = x.arr(this.source) ? this.source.map(eb) : L(eb(this.source));
                 return this.calc(...e)
             }
             _start() {
-                this.idle && !t4(this._active) && (this.idle = !1,
+                this.idle && !t5(this._active) && (this.idle = !1,
                 C(eJ(this), e => {
                     e.done = !1
                 }
                 ),
                 u.skipAnimation ? (d.batchedUpdates( () => this.advance()),
-                t6(this)) : Z.start(this))
+                t4(this)) : Z.start(this))
             }
             _attach() {
                 let e = 1;
@@ -25290,7 +25706,7 @@ localStorage.setItem('mapIDS','');
                 }
                 ),
                 this._active.clear(),
-                t6(this)
+                t4(this)
             }
             eventObserved(e) {
                 "change" == e.type ? e.idle ? this.advance() : (this._active.add(e.parent),
@@ -25301,10 +25717,10 @@ localStorage.setItem('mapIDS','');
         function t3(e) {
             return !1 !== e.idle
         }
-        function t4(e) {
+        function t5(e) {
             return !e.size || Array.from(e).every(t3)
         }
-        function t6(e) {
+        function t4(e) {
             e.idle || (e.idle = !0,
             C(eJ(e), e => {
                 e.done = !0
@@ -25320,7 +25736,7 @@ localStorage.setItem('mapIDS','');
             to: (e, t) => new t2(e,t)
         }),
         Z.advance;
-        var t5 = n(73935)
+        var t6 = n(73935)
           , t8 = /^--/
           , t9 = {}
           , t7 = {
@@ -25434,7 +25850,7 @@ localStorage.setItem('mapIDS','');
         }
         ;
         u.assign({
-            batchedUpdates: t5.unstable_batchedUpdates,
+            batchedUpdates: t6.unstable_batchedUpdates,
             createStringInterpolator: eM,
             colors: {
                 transparent: 0,
@@ -25597,7 +26013,7 @@ localStorage.setItem('mapIDS','');
             }
               , o = e => {
                 let t = e7(e) || "Anonymous";
-                return (e = x.str(e) ? o[e] || (o[e] = e5(e, i)) : e[e9] || (e[e9] = e5(e, i))).displayName = `Animated(${t})`,
+                return (e = x.str(e) ? o[e] || (o[e] = e6(e, i)) : e[e9] || (e[e9] = e6(e, i))).displayName = `Animated(${t})`,
                 e
             }
             ;
@@ -26961,19 +27377,19 @@ localStorage.setItem('mapIDS','');
             return e && !t
         }
         )
-          , e4 = e0 && e2( () => J.isReadableStream(new Response("").body))
-          , e6 = {
-            stream: e4 && (e => e.body)
+          , e5 = e0 && e2( () => J.isReadableStream(new Response("").body))
+          , e4 = {
+            stream: e5 && (e => e.body)
         };
         eQ && (c = new Response,
         ["text", "arrayBuffer", "blob", "formData", "stream"].forEach(e => {
-            e6[e] || (e6[e] = J.isFunction(c[e]) ? t => t[e]() : (t, n) => {
+            e4[e] || (e4[e] = J.isFunction(c[e]) ? t => t[e]() : (t, n) => {
                 throw new X(`Response type '${e}' is not supported`,X.ERR_NOT_SUPPORT,n)
             }
             )
         }
         ));
-        let e5 = async e => {
+        let e6 = async e => {
             if (null == e)
                 return 0;
             if (J.isBlob(e))
@@ -26990,7 +27406,7 @@ localStorage.setItem('mapIDS','');
         }
           , e8 = async (e, t) => {
             let n = J.toFiniteNumber(e.getContentLength());
-            return null == n ? e5(t) : n
+            return null == n ? e6(t) : n
         }
           , e9 = {
             http: null,
@@ -27028,8 +27444,8 @@ localStorage.setItem('mapIDS','');
                         credentials: a ? h : void 0
                     });
                     let s = await fetch(t)
-                      , l = e4 && ("stream" === d || "response" === d);
-                    if (e4 && (u || l && m)) {
+                      , l = e5 && ("stream" === d || "response" === d);
+                    if (e5 && (u || l && m)) {
                         let e = {};
                         ["status", "statusText", "headers"].forEach(t => {
                             e[t] = s[t]
@@ -27044,7 +27460,7 @@ localStorage.setItem('mapIDS','');
                         , e1),e)
                     }
                     d = d || "text";
-                    let v = await e6[J.findKey(e6, d) || "text"](s, e);
+                    let v = await e4[J.findKey(e4, d) || "text"](s, e);
                     return !l && m && m(),
                     await new Promise( (n, r) => {
                         eD(n, r, {
@@ -30232,7 +30648,7 @@ localStorage.setItem('mapIDS','');
     };
     e.O(0, [774, 179], function() {
         return t(6840),
-        t(26036)
+        t(37253)
     }),
     _N_E = e.O()
 }
